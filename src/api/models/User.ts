@@ -7,7 +7,7 @@ interface IUser {
 
 const schema = new Schema<IUser>({
    email: {type:String, required:true, unique:true},
-   password: {type:String, required:true, minlength:8}
+   password: {type:String, required:true, minlength:6}
 })
 
 const modelName:string = 'User'
