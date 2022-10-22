@@ -15,9 +15,8 @@ interface Follow {
 }
 
 export interface IProfile {
-   user?: Types.ObjectId,
+   user: Types.ObjectId,
    bio?: string,
-   username?: string,
    name?: string,
    pubs?: Types.ObjectId, //or Number
    website?: string,
@@ -30,9 +29,8 @@ export interface IProfile {
 
 const schema = new Schema({
    user: {type: Schema.Types.ObjectId, ref: 'User'},
-   bio: {type:String, trim: true},
-   username: {type:String, required:true}, //Confirm each one
-   name: {type:String, required:true}, //Confirm each one,
+   bio: {type:String},
+   name: {type:String}, 
    pubs: {type:Schema.Types.ObjectId, ref: 'Posts'},
    website: {type:String},
    celphone: {type: Number},

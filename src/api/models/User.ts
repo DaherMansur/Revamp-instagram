@@ -2,11 +2,13 @@ import {Model, Schema, model, connection} from "mongoose"
 
 interface IUser {
    email: string,
-   password: string
+   password: string,
+   username: string
 }
 
 const schema = new Schema<IUser>({
    email: {type:String, required:true, unique:true},
+   username: {type:String, required:true, unique:true},
    password: {type:String, required:true, minlength:6}
 })
 
