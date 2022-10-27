@@ -18,7 +18,9 @@ export const edit = async (req:Request, res:Response) => {
          .resize(200)
          .toFormat('png')
          .toFile(`./public/media/images/${filename}.png`)
-      
+
+      //Use this whenever you use unlink
+      sharp.cache(false);
       await unlink(file.path)
    }
 
