@@ -26,9 +26,6 @@ app.use('/api', ApiRoutes)
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
    res.status(400)
    res.json({status: 'Não autorizado'})
-
-   if(err.status) res.status(err.status)
-   if(err.message) res.json({status: err.message})
 }
 
 //404 - NotFound

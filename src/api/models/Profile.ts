@@ -15,12 +15,12 @@ interface Follow {
 }
 
 export interface IProfile {
-   user: Types.ObjectId,
+   user?: Types.ObjectId,
    bio?: string,
    name?: string,
    pubs?: Types.ObjectId, //or Number
    website?: string,
-   celphone?: number,
+   celphone?: string,
    gender?: string,
    photo?: Types.DocumentArray<Photo>
    following?: Array<Follow> 
@@ -29,11 +29,11 @@ export interface IProfile {
 
 const schema = new Schema({
    user: {type: Schema.Types.ObjectId, ref: 'User'},
-   bio: {type:String},
+   bio: {type:String, maxlength: 150},
    name: {type:String}, 
    pubs: {type:Schema.Types.ObjectId, ref: 'Posts'},
    website: {type:String},
-   celphone: {type: Number},
+   celphone: {type: String},
    gender: {type:String},
    photo: [{url:String}],
    following: [{
