@@ -1,4 +1,4 @@
-import multer from 'multer'
+import multer, { Multer } from 'multer'
 import { v4 as uuidv4 } from 'uuid'
 
 const storageConfig = multer.diskStorage({
@@ -11,13 +11,24 @@ const storageConfig = multer.diskStorage({
    }
 })
 
-
 export const upload = multer({
    storage: storageConfig,
    fileFilter: (req, file, cb ) => {
       const allowed: string[] = ['image/jpg', 'image/jpeg', 'image/png'];
 
-      cb(null, allowed.includes(file.mimetype));
-      
+      const fileMime = allowed.includes(file.mimetype)
+
+      if(!fileMime){
+         interface ResponseError extends Error {
+            status?: number
+         }
+
+         const error:ResponseError = new Error('Tipo de arquivo inválido')
+         error.status = 418// TeaPot!
+         return cb(error)
+      }
+
+      cb(null, fileMime);
    }
 })
+

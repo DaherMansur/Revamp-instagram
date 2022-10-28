@@ -22,10 +22,16 @@ app.use(express.urlencoded({extended:true}))
 //Routes
 app.use('/api', ApiRoutes)
 
-//400 - BadRequest
+//Error Handler
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-   res.status(400)
-   res.json({status: 'Não autorizado'})
+   let message = 'Não autorizado' //default
+   let status = 400 //default
+
+   if(err) message = err.message
+   if(err) status = err.status
+
+   res.status(status)
+   res.json({status :message})
 }
 
 //404 - NotFound
