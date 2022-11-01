@@ -22,7 +22,7 @@ export interface IProfile {
    website?: string,
    celphone?: string,
    gender?: string,
-   photo?: Types.DocumentArray<Photo>
+   photo?: Array<Photo>
    following?: Array<Follow> 
    followers?: Array<Follow>
 }

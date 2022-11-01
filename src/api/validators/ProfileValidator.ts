@@ -18,7 +18,7 @@ export const ProfileValidator = {
             errorMessage: 'Bio não pode exceder mais de 150 caracteres'
          }
       },
-      web: {
+      website: {
          optional: true,
          trim: true,
          isLength: {
@@ -35,7 +35,6 @@ export const ProfileValidator = {
       gender: {
          optional: true,
          trim: true
-      },
-      //photo - Check how to do it
+      }
    })
 }

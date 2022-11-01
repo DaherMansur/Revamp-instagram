@@ -2,54 +2,52 @@ import {Request, Response} from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import sharp from 'sharp'
 import { unlink } from 'fs/promises'
-import fs ,{ createWriteStream, createReadStream } from 'fs'
 
 import User from '../models/User'
 import Profile, {IProfile} from '../models/Profile'
 
 export const edit = async (req:Request, res:Response) => {
-   const {bio, name, website, celphone, gender} = req.body
+   const errors = validationResult(req)
+   if(!errors.isEmpty()) return res.json({error: errors.mapped()})
 
+   const data = matchedData(req)
+   
    const user = req.user as InstanceType<typeof User>
-
    const file = req.file
 
+   const profile = await Profile.findOne({id: user?.id})
+
+   if(!profile) res.json({error: 'Usuário não existe'})
+
    const updates:IProfile = {
-      name,
-      bio,
-      website,
-      celphone,
-      gender,
+      name: data.name ?? profile?.name,
+      bio: data.bio ?? profile?.bio,
+      website: data.website ?? profile?.website,
+      celphone: data.celphone ?? profile?.celphone,
+      gender: data.gender ?? profile?.gender,
+      photo: []
    }
 
    if(file){
-      const [type, extension] = file?.mimetype.split('/')
-      const filename = file?.filename
+      await sharp(file?.path)
+         .toFormat('png')
+         .resize(200)
+         .toFile(`./public/media/images/${file?.filename}.png`)
 
-      if(type === 'video'){
-         const newPath = `./public/media/videos/${filename}.${extension}`
-         fs.rename(file?.path, newPath, (err) => {
-            if(err) console.log(err)
-         })
-         updates.photo?.push({
-            url: file?.filename
-         })
-      }
+      profile?.photo?.forEach(async (e) => {
+         if(e.url) await unlink(`./public/media/images/${e.url}.png`)
+      })
 
-      if(type === 'image') {
-         await sharp(file?.path)
-            .toFormat('png')
-            .resize(200)
-            .toFile(`./public/media/images/${filename}.png`)
-         
-         //Use this whenever you use unlink
-         sharp.cache(false);
-         await unlink(file.path)
-      }
-      
+      updates.photo?.push({
+         url: file?.filename
+      }) 
+
+      //Use this whenever you use unlink
+      sharp.cache(false);
+      await unlink(file.path)
    }
-   
-   await Profile.findOneAndUpdate(user?.id, {$set: updates})
 
-   res.json({status:updates})
+   await profile?.updateOne(updates)
+
+   res.json({status: updates})
 }

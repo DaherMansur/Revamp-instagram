@@ -11,10 +11,10 @@ const storageConfig = multer.diskStorage({
    }
 })
 
-export const upload = multer({
+export const uploadPhoto = multer({
    storage: storageConfig,
    fileFilter: (req, file, cb ) => {
-      const allowed: string[] = ['image/jpg', 'image/jpeg', 'image/png', 'video/mp4'];
+      const allowed: string[] = ['image/jpg', 'image/jpeg', 'image/png'];
 
       const fileMime = allowed.includes(file.mimetype)
 

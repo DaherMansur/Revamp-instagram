@@ -2,11 +2,11 @@ import {Request, Response, Router} from 'express'
 
 //Middlewares
 import { privateRoute } from '../middlewares/auth'
-import { upload } from '../middlewares/multer'
+import { uploadPhoto } from '../middlewares/multer'
 
 //Validators
 import { AuthValidator } from '../validators/AuthValidator'
-//import { ProfileValidator } from '../validators/ProfileValidator'
+import { ProfileValidator } from '../validators/ProfileValidator'
 
 //Controllers
 import * as authController from '../controllers/authController'
@@ -23,7 +23,12 @@ router.post('/signup', AuthValidator.register, authController.signUp) //Register
 router.post('/signin', AuthValidator.login, authController.signIn) //Login
 
 //Profile - Account
-router.post('/accounts/edit', privateRoute, upload.single('photo'), profileController.edit)
+router.post('/accounts/edit', 
+   privateRoute, //Middleware for Auth
+   uploadPhoto.single('photo'), //Middeware Multer
+   ProfileValidator.edit, //Validator
+   profileController.edit // Controller
+)
 
 export default router
 
