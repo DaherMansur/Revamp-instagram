@@ -23,12 +23,16 @@ router.post('/signup', AuthValidator.register, authController.signUp) //Register
 router.post('/signin', AuthValidator.login, authController.signIn) //Login
 
 //Profile - Account
+router.get('/:username', privateRoute, profileController.getProfile)
+
 router.post('/accounts/edit', 
    privateRoute, //Middleware for Auth
    uploadPhoto.single('photo'), //Middeware Multer
    ProfileValidator.edit, //Validator
    profileController.edit // Controller
 )
+
+
 
 export default router
 

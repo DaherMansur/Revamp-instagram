@@ -6,6 +6,29 @@ import { unlink } from 'fs/promises'
 import User from '../models/User'
 import Profile, {IProfile} from '../models/Profile'
 
+export const getProfile = async(req:Request, res:Response) => {
+   const username = req.params.username as string
+
+   const user = req.user as InstanceType<typeof User>
+
+   let userId
+   if(username === user?.username) {
+      userId = user?.id //E se for o User.Id?
+
+   } else { 
+      const notUser = await User.findOne({username})
+      if(!notUser) return res.json({error: 'Usuário não encontrado'})
+
+      userId = notUser?.id //Mesma coisa aqui e se for o notUser.id?
+   }
+   const profile = await Profile.findOne({user: userId})
+      .populate<{user: typeof User}>
+      ({path: 'user', select: 'username'})
+   
+
+   res.json({status: profile})
+}
+
 export const edit = async (req:Request, res:Response) => {
    const errors = validationResult(req)
    if(!errors.isEmpty()) return res.json({error: errors.mapped()})
@@ -14,8 +37,8 @@ export const edit = async (req:Request, res:Response) => {
    
    const user = req.user as InstanceType<typeof User>
    const file = req.file
-
-   const profile = await Profile.findOne({id: user?.id})
+   
+   const profile = await Profile.findOne({user: user?.id})
 
    if(!profile) res.json({error: 'Usuário não existe'})
 
@@ -46,8 +69,8 @@ export const edit = async (req:Request, res:Response) => {
       sharp.cache(false);
       await unlink(file.path)
    }
-
-   await profile?.updateOne(updates)
+   const teste = profile?.updateOne(updates)
+   await teste
 
    res.json({status: updates})
 }
