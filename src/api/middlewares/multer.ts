@@ -1,6 +1,10 @@
 import multer from 'multer'
 import { v4 as uuidv4 } from 'uuid'
 
+interface ResponseError extends Error {
+   status?: number
+}
+
 const storageConfig = multer.diskStorage({
    destination: (req, file, cb) => {
       cb(null, './temp')
@@ -19,10 +23,6 @@ export const uploadPhoto = multer({
       const fileMime = allowed.includes(file.mimetype)
 
       if(!fileMime){
-         interface ResponseError extends Error {
-            status?: number
-         }
-
          const error:ResponseError = new Error('Tipo de arquivo inválido')
          error.status = 418// TeaPot!
          return cb(error)
@@ -32,3 +32,32 @@ export const uploadPhoto = multer({
    }
 })
 
+export const uploadFiles = multer({
+   storage: storageConfig,
+   limits: {files: 10},
+   fileFilter: (req, file, cb,) => {
+      const allowed: string[] = [
+         'image/jpg', 'image/jpeg', 'image/png', 'image/gif', 
+         'video/mp4', 'video/mkv', 'video/avi'
+      ];
+      //If the limit exceeds
+      let count = 0
+      for(let i in file){
+         count += 1
+      }
+      if(count > 10){
+         const error:ResponseError = new Error('Tipo de arquivo inválido')
+         error.status = 418// TeaPot!
+         return cb(error)
+      }
+
+      const fileMime = allowed.includes(file.mimetype)
+
+      if(!fileMime){
+         const error:ResponseError = new Error('Tipo de arquivo inválido')
+         error.status = 418// TeaPot!
+         return cb(error)
+      }
+      cb(null, fileMime);
+   }
+})

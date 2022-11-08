@@ -1,4 +1,8 @@
 import { Request, Response } from "express";
+import sharp from "sharp";
+import { unlink } from "fs/promises";
+import fs from 'fs'
+import { MulterError } from "multer";
 
 //Models
 import User from "../models/User"
@@ -7,6 +11,8 @@ import Profile from "../models/Profile"
 
 export const createPost = async(req:Request, res:Response) => {
    let {caption} = req.body
+
+   const files = req.files as Express.Multer.File[]
 
    const user = req.user as InstanceType<typeof User>
    const profile = await Profile.findOne({user: user?.id})
@@ -32,16 +38,49 @@ export const createPost = async(req:Request, res:Response) => {
       }
    }
 
-   
-   
-   //console.log(tags)
-   
+   let media = []
+   if(files){
+      //ErrorHandler bug???
+      if(files.length > 10) return res.json({error: 'Excedeu o limite de envios simultaneos(10)'})
+      for(let i in files){
+         let filename = files[i].filename
+         let [type, extension] = files[i].mimetype.split('/')
 
+         if(type === 'image'){
+            await sharp(files[i].path)
+               .toFile(`./public/media/images/${filename}.${extension}`)
+
+            media.push({
+               url: filename,
+               default: false
+            })
+
+            sharp.cache(false)
+            unlink(files[i].path)
+         }
+
+         if(type === 'video'){
+            let filename = files[i].filename
+            let oldPath = files[i].path
+            let newPath = `./public/media/videos/${filename}.${extension}`
+            fs.rename(oldPath, newPath, (err) => {
+               if(err) console.log(err)
+            })
+
+            media.push({
+               url: filename,
+               default: false
+            })
+         }
+         if(files[0]) media[0].default = true
+      }
+   }
 
    const newPost = new Post()
    newPost.caption = caption
    newPost.hashtag = hashtags
    newPost.profile = profile?.id
+   newPost.files = media
    await newPost.save()
 
    res.json({status:newPost})

@@ -2,7 +2,7 @@ import {Request, Response, Router} from 'express'
 
 //Middlewares
 import { privateRoute } from '../middlewares/auth'
-import { uploadPhoto } from '../middlewares/multer'
+import { uploadPhoto, uploadFiles } from '../middlewares/multer'
 
 //Validators
 import { AuthValidator } from '../validators/AuthValidator'
@@ -34,7 +34,7 @@ router.post('/accounts/edit',
 )
 
 //Post
-router.post('/post/create', privateRoute, postController.createPost)
+router.post('/post/create', privateRoute, uploadFiles.array('files', 10), postController.createPost)
 
 
 

@@ -8,7 +8,7 @@ interface Comments {
 }
 
 interface Files {
-   name: string,
+   url: string,
    default: boolean
 }
 
@@ -33,7 +33,7 @@ const schema = new Schema<IPost>({
    createdAt: {type: Date, default: Date.now},
    likes: {type: Schema.Types.ObjectId, ref: 'Profile'},
    files: [{
-      name: {type: String},
+      url: {type: String},
       default: {type: Boolean}
    }],
    comments: [{
