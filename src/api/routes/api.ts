@@ -11,6 +11,7 @@ import { ProfileValidator } from '../validators/ProfileValidator'
 //Controllers
 import * as authController from '../controllers/authController'
 import * as profileController from '../controllers/profileController'
+import * as postController from '../controllers/postController'
 
 const router = Router()
 
@@ -31,6 +32,9 @@ router.post('/accounts/edit',
    ProfileValidator.edit, //Validator
    profileController.edit // Controller
 )
+
+//Post
+router.post('/post/create', privateRoute, postController.createPost)
 
 
 
