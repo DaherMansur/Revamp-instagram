@@ -7,7 +7,7 @@ interface Comments {
    //date?
 }
 
-interface Files {
+interface Files{
    url: string,
    default: boolean
 }
@@ -23,7 +23,7 @@ export interface IPost {
    createdAt: Date,
    likes: Types.ObjectId,
    comments: Array<Comments>,
-   files: Array<Files>
+   files: Types.DocumentArray<Files>
 }
 
 const schema = new Schema<IPost>({

@@ -35,7 +35,7 @@ router.post('/accounts/edit',
 
 //Post
 router.post('/post/create', privateRoute, uploadFiles.array('files', 10), postController.createPost)
-
+router.post('/post/:id', privateRoute, uploadFiles.array('files', 10), postController.editPost) //EDIT
 
 
 export default router

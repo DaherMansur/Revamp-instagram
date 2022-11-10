@@ -18,27 +18,29 @@ export const createPost = async(req:Request, res:Response) => {
    const profile = await Profile.findOne({user: user?.id})
    if(!profile) return res.json({error: 'Perfil não existe'})
 
-   let hashtags = []
+   const newPost = new Post()
+   newPost.profile = profile?.id
+
    if(caption){
       if(caption.length > 2200) return res.json({error: 'A legenda excedeu o número de caracteres(2200)'})
       
       for(let i = 0; i < caption.length; i++){
          let startOfTag = caption.indexOf('#', i)
-         if(startOfTag === -1) {
-            caption += ' '
-            break
-         }
-
+         if(startOfTag === -1) break
+         
          let endOfTag = caption.indexOf(' ', startOfTag)
+         if(endOfTag === -1) caption += ' '
+
          let tag = caption.substr(startOfTag, endOfTag-startOfTag)
          if(tag && tag.length > 1) {
-            hashtags?.push({name: tag})
+            newPost.hashtag?.push({name: tag})
          }
-         i = startOfTag
+         
+         i = endOfTag
       }
+      newPost.caption = caption
    }
 
-   let media = []
    if(files){
       //ErrorHandler bug???
       if(files.length > 10) return res.json({error: 'Excedeu o limite de envios simultaneos(10)'})
@@ -50,7 +52,7 @@ export const createPost = async(req:Request, res:Response) => {
             await sharp(files[i].path)
                .toFile(`./public/media/images/${filename}.${extension}`)
 
-            media.push({
+            newPost.files.push({
                url: filename,
                default: false
             })
@@ -67,21 +69,21 @@ export const createPost = async(req:Request, res:Response) => {
                if(err) console.log(err)
             })
 
-            media.push({
+            newPost.files.push({
                url: filename,
                default: false
             })
          }
-         if(files[0]) media[0].default = true
+         if(files[0]) newPost.files[0].default = true
       }
    }
 
-   const newPost = new Post()
-   newPost.caption = caption
-   newPost.hashtag = hashtags
-   newPost.profile = profile?.id
-   newPost.files = media
    await newPost.save()
-
    res.json({status:newPost})
+}
+
+export const editPost = async(req:Request, res:Response) => {
+
+
+   res.json({status: true})
 }
