@@ -6,7 +6,7 @@ import { MulterError } from "multer";
 
 //Models
 import User from "../models/User"
-import Post from "../models/Post"
+import Post, { IPost } from "../models/Post"
 import Profile from "../models/Profile"
 
 export const createPost = async(req:Request, res:Response) => {
@@ -41,6 +41,7 @@ export const createPost = async(req:Request, res:Response) => {
       newPost.caption = caption
    }
 
+   let media = []
    if(files){
       //ErrorHandler bug???
       if(files.length > 10) return res.json({error: 'Excedeu o limite de envios simultaneos(10)'})
@@ -50,12 +51,7 @@ export const createPost = async(req:Request, res:Response) => {
 
          if(type === 'image'){
             await sharp(files[i].path)
-               .toFile(`./public/media/images/${filename}.${extension}`)
-
-            newPost.files.push({
-               url: filename,
-               default: false
-            })
+               .toFile(`./public/assets/media/${filename}.${extension}`)
 
             sharp.cache(false)
             unlink(files[i].path)
@@ -64,26 +60,62 @@ export const createPost = async(req:Request, res:Response) => {
          if(type === 'video'){
             let filename = files[i].filename
             let oldPath = files[i].path
-            let newPath = `./public/media/videos/${filename}.${extension}`
+            let newPath = `./public/assets/media/${filename}.${extension}`
             fs.rename(oldPath, newPath, (err) => {
                if(err) console.log(err)
             })
-
-            newPost.files.push({
-               url: filename,
-               default: false
-            })
          }
-         if(files[0]) newPost.files[0].default = true
+         media.push({
+            url: `${filename}.${extension}`,
+            default: false
+         })
+         if(files[0]) media[0].default = true
       }
    }
-
+   newPost.files = media
    await newPost.save()
    res.json({status:newPost})
 }
 
 export const editPost = async(req:Request, res:Response) => {
+   let {caption, delMedia} = req.body
+   let {id} = req.params
+
+   const files = req.files as Express.Multer.File[]
+
+   const user = req.user as InstanceType<typeof User>
+   const profile = await Profile.findOne({user: user?.id})
+   if(!profile) return res.json({error: 'Perfil não existe'})
+
+   const post = await Post.findById(id)
+
+   const updates:IPost = {
+      caption: caption ?? post?.caption
+   }
+
+   if(files){
+
+   }
+
+   
+   if(delMedia){ //Delete Media
+      let asset = false
+      post?.files?.forEach((e) => {
+         if(e.url == delMedia){
+            asset = true
+         }
+      })
+
+      if(asset) {
+         await post?.updateOne({$pull: {
+            files: {url: delMedia}
+         }})
+         unlink(`./public/assets/media/${delMedia}`)
+      } else {
+         return res.json({error: 'Essa imagem não é sua'})
+      }
+   }
 
 
-   res.json({status: true})
+   res.json({status: delMedia})
 }

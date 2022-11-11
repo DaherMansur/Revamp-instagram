@@ -17,13 +17,13 @@ interface Hashtag {
 }
 
 export interface IPost {
-   profile: Types.ObjectId,
-   caption: string,
-   hashtag: Array<Hashtag>,
-   createdAt: Date,
-   likes: Types.ObjectId,
-   comments: Array<Comments>,
-   files: Types.DocumentArray<Files>
+   profile?: Types.ObjectId,
+   caption?: string,
+   hashtag?: Array<Hashtag>,
+   createdAt?: Date,
+   likes?: Types.ObjectId,
+   comments?: Array<Comments>,
+   files?: Array<Files>
 }
 
 const schema = new Schema<IPost>({
@@ -34,7 +34,8 @@ const schema = new Schema<IPost>({
    likes: {type: Schema.Types.ObjectId, ref: 'Profile'},
    files: [{
       url: {type: String},
-      default: {type: Boolean}
+      default: {type: Boolean},
+      _id: false
    }],
    comments: [{
       idUser: {type: Schema.Types.ObjectId, ref:'Profile'},
