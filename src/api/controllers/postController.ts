@@ -45,6 +45,7 @@ export const createPost = async(req:Request, res:Response) => {
    if(files){
       //ErrorHandler bug???
       if(files.length > 10) return res.json({error: 'Excedeu o limite de envios simultaneos(10)'})
+      
       for(let i in files){
          let filename = files[i].filename
          let [type, extension] = files[i].mimetype.split('/')
@@ -67,11 +68,12 @@ export const createPost = async(req:Request, res:Response) => {
          }
          media.push({
             url: `${filename}.${extension}`,
-            default: false
+            default: parseInt(i)
          })
-         if(files[0]) media[0].default = true
+         //if(files[0]) media[0].default = true
       }
    }
+
    newPost.files = media
    await newPost.save()
    res.json({status:newPost})
@@ -88,16 +90,62 @@ export const editPost = async(req:Request, res:Response) => {
    if(!profile) return res.json({error: 'Perfil não existe'})
 
    const post = await Post.findById(id)
+   if(!post) return res.json({error: 'Post não existe'})
 
    const updates:IPost = {
       caption: caption ?? post?.caption
    }
 
    if(files){
+      let error = false
+      let media = []
 
+      let order = post?.files?.length
+      for(let i in files){
+         if(post.files && post.files?.length >= 10) {
+            error = true
+            break 
+         }
+
+         let filename = files[i].filename
+         let [type, extension] = files[i].mimetype.split('/')
+
+         if(type === 'image'){
+            await sharp(files[i].path)
+               .toFile(`./public/assets/media/${filename}.${extension}`)
+
+            sharp.cache(false)
+            unlink(files[i].path)
+         }
+         
+         if(type === 'video'){
+            let filename = files[i].filename
+            let oldPath = files[i].path
+            let newPath = `./public/assets/media/${filename}.${extension}`
+            fs.rename(oldPath, newPath, (err) => {
+               if(err) console.log(err)
+            })
+         }
+
+         let newOrder = parseInt(i)
+         if(order){
+            var newValue = parseInt(i)
+            newOrder = (newValue + order)
+         }
+
+         media.push({
+            url: filename,
+            default: newOrder
+         })
+      }
+
+      if(error) return res.json({error: 'Excedeu o limite de media(10)'})
+      
+      await post.updateOne({
+         $push: { files: media },
+      })
    }
 
-   
    if(delMedia){ //Delete Media
       let asset = false
       post?.files?.forEach((e) => {
@@ -112,10 +160,9 @@ export const editPost = async(req:Request, res:Response) => {
          }})
          unlink(`./public/assets/media/${delMedia}`)
       } else {
-         return res.json({error: 'Essa imagem não é sua'})
+         return res.json({error: 'Imagem não encontrada'})
       }
    }
 
-
-   res.json({status: delMedia})
+   res.json({status: updates})
 }
