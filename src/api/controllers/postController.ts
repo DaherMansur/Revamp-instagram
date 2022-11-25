@@ -3,6 +3,7 @@ import sharp from "sharp";
 import { unlink } from "fs/promises";
 import fs from 'fs'
 import { MulterError } from "multer";
+import mongoose from "mongoose";
 
 //Models
 import User from "../models/User"
@@ -69,8 +70,7 @@ export const createPost = async(req:Request, res:Response) => {
          media.push({
             url: `${filename}.${extension}`,
             default: parseInt(i)
-         })
-         //if(files[0]) media[0].default = true
+         }) 
       }
    }
 
@@ -82,6 +82,11 @@ export const createPost = async(req:Request, res:Response) => {
 export const editPost = async(req:Request, res:Response) => {
    let {caption, delMedia} = req.body
    let {id} = req.params
+
+   if(!mongoose.Types.ObjectId.isValid(id)) {
+      res.json({error: 'ID Inválido'})
+      return
+   }
 
    const files = req.files as Express.Multer.File[]
 
@@ -165,4 +170,24 @@ export const editPost = async(req:Request, res:Response) => {
    }
 
    res.json({status: updates})
+}
+
+export const getPost = async (req:Request, res:Response) => {
+   const {id} = req.params
+
+   if(!mongoose.Types.ObjectId.isValid(id)) {
+      res.json({error: 'ID Inválido'})
+      return
+   }
+
+   const post = await Post.findById(id)
+      .populate<{profile: typeof Profile}>
+      ({path: 'profile'})
+
+   if(!post) {
+      res.json({error: 'Post não existe'})
+      return
+   } 
+
+   res.json({status: post})
 }

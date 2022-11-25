@@ -13,13 +13,13 @@ export const getProfile = async(req:Request, res:Response) => {
 
    let userId
    if(username === user?.username) {
-      userId = user?.id //E se for o User.Id?
+      userId = user?.id
 
-   } else { 
+   }else { 
       const notUser = await User.findOne({username})
       if(!notUser) return res.json({error: 'Usuário não encontrado'})
 
-      userId = notUser?.id //Mesma coisa aqui e se for o notUser.id?
+      userId = notUser?.id
    }
    const profile = await Profile.findOne({user: userId})
       .populate<{user: typeof User}>
@@ -69,8 +69,7 @@ export const edit = async (req:Request, res:Response) => {
       sharp.cache(false);
       await unlink(file.path)
    }
-   const teste = profile?.updateOne(updates)
-   await teste
+   await profile?.updateOne(updates)
 
    res.json({status: updates})
 }
