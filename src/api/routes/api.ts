@@ -2,7 +2,7 @@ import {Request, Response, Router} from 'express'
 
 //Middlewares
 import { privateRoute } from '../middlewares/auth'
-import { uploadPhoto, uploadFiles } from '../middlewares/multer'
+import {uploadFiles, uploadAvatar} from '../middlewares/multer'
 
 //Validators
 import { AuthValidator } from '../validators/AuthValidator'
@@ -28,14 +28,14 @@ router.get('/:username', privateRoute, profileController.getProfile)
 
 router.post('/accounts/edit', 
    privateRoute, //Middleware for Auth
-   uploadPhoto.single('photo'), //Middeware Multer
+   uploadAvatar, //Middeware Multer
    ProfileValidator.edit, //Validator
    profileController.edit // Controller
 )
 
 //Post
-router.post('/post/create', privateRoute, uploadFiles.array('files', 10), postController.createPost)
-router.post('/post/edit/:id', privateRoute, uploadFiles.array('files', 10), postController.editPost) //EDIT
+router.post('/post/create', privateRoute, uploadFiles, postController.createPost)
+router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost) //EDIT ROUTE
 router.get('/post/:id', postController.getPost)
 
 

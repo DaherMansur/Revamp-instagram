@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import sharp from "sharp";
 import { unlink } from "fs/promises";
 import fs from 'fs'
-import { MulterError } from "multer";
 import mongoose from "mongoose";
 
 //Models
@@ -36,7 +35,7 @@ export const createPost = async(req:Request, res:Response) => {
          if(tag && tag.length > 1) {
             newPost.hashtag?.push({name: tag})
          }
-         
+      
          i = endOfTag
       }
       newPost.caption = caption
@@ -44,9 +43,7 @@ export const createPost = async(req:Request, res:Response) => {
 
    let media = []
    if(files){
-      //ErrorHandler bug???
-      if(files.length > 10) return res.json({error: 'Excedeu o limite de envios simultaneos(10)'})
-      
+
       for(let i in files){
          let filename = files[i].filename
          let [type, extension] = files[i].mimetype.split('/')

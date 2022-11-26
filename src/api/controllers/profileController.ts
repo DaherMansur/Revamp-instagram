@@ -57,6 +57,8 @@ export const edit = async (req:Request, res:Response) => {
          .resize(200)
          .toFile(`./public/media/images/${file?.filename}.png`)
 
+      //Do this part in a better way without using foreach
+      //And do some check if the file exist or not
       profile?.photo?.forEach(async (e) => {
          if(e.url) await unlink(`./public/media/images/${e.url}.png`)
       })
