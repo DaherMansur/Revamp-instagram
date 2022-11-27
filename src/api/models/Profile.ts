@@ -35,7 +35,7 @@ const schema = new Schema({
    website: {type:String},
    celphone: {type: String},
    gender: {type:String},
-   photo: [{url:String}],
+   photo: [{url:String, _id:false}],
    following: [{
       idProfile: {type: Schema.Types.ObjectId, ref: 'Profile'},
       follow: {

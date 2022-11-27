@@ -2,6 +2,7 @@ import {Request, Response} from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import sharp from 'sharp'
 import { unlink } from 'fs/promises'
+import fs from 'fs'
 
 import User from '../models/User'
 import Profile, {IProfile} from '../models/Profile'
@@ -55,14 +56,16 @@ export const edit = async (req:Request, res:Response) => {
       await sharp(file?.path)
          .toFormat('png')
          .resize(200)
-         .toFile(`./public/media/images/${file?.filename}.png`)
+         .toFile(`./public/assets/media/${file?.filename}.png`)
 
-      //Do this part in a better way without using foreach
-      //And do some check if the file exist or not
-      profile?.photo?.forEach(async (e) => {
-         if(e.url) await unlink(`./public/media/images/${e.url}.png`)
-      })
-
+      const photo = profile?.photo?.find(e => e.url)
+      if(photo){
+         const pathUrl = `./public/assets/media/${photo?.url}.png`
+         if(fs.existsSync(pathUrl)){
+            await unlink(pathUrl)
+         }
+      }
+      
       updates.photo?.push({
          url: file?.filename
       }) 
@@ -70,6 +73,7 @@ export const edit = async (req:Request, res:Response) => {
       //Use this whenever you use unlink
       sharp.cache(false);
       await unlink(file.path)
+      
    }
    await profile?.updateOne(updates)
 
