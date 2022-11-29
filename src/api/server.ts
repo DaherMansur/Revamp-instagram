@@ -31,7 +31,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
    if(err) status = err.status
 
    res.status(status)
-   res.json({status :message})
+   res.json({error :message})
 }
 
 //404 - NotFound
