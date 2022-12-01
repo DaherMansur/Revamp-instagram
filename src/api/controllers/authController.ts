@@ -3,6 +3,8 @@ import { generateToken } from '../middlewares/auth'
 import {validationResult, matchedData} from 'express-validator'
 import bcrypt from 'bcrypt'
 
+import * as AuthService from '../services/AuthService'
+
 //models
 import User from '../models/User'
 import Profile from '../models/Profile'
@@ -12,30 +14,17 @@ export const signUp = async(req:Request, res:Response) => {
    if(!errors.isEmpty()) return res.status(400).json({errors: errors.mapped()})
 
    const data = matchedData(req)
-
-   //Basic verification for username and email
-   const username = await User.findOne({username: data?.username})
-   const email = await User.findOne({email: data?.email})
-
-   if(email || username) {
-      return res.json({error: 'Email ou nome de usuário já existe'})
+   const user = {
+      username: data?.username,
+      email: data?.email,
+      password: data?.password
    }
 
-   //Password Hash
-   const hashPassword = bcrypt.hashSync(data?.password, 10) 
-
-   const newUser = new User()
-   newUser.username = data?.username
-   newUser.email = data?.email
-   newUser.password = hashPassword
-   await newUser.save()
-
-   //create a Profile for the User.
-   const newProfile = new Profile()
-   newProfile.user = newUser?.id
-   await newProfile.save()
-
-   const token = generateToken({_id: newUser?.id})
+   const token = await AuthService.createUser(user)
+   if(token instanceof Error){
+      res.status(500).json({error: token.message})
+      return
+   }
 
    res.json({status: token})
 }

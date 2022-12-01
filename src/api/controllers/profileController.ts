@@ -73,8 +73,16 @@ export const edit = async (req:Request, res:Response) => {
       //Use this whenever you use unlink
       sharp.cache(false);
       await unlink(file.path)
-      
+   } else {
+      const photo = profile?.photo?.find(e => e.url)
+      if(photo){
+         const pathUrl = `./public/assets/media/${photo?.url}.png`
+         if(fs.existsSync(pathUrl)){
+            await unlink(pathUrl)
+         }
+      }
    }
+
    await profile?.updateOne(updates)
 
    res.json({status: updates})
