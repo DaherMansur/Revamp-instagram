@@ -1,13 +1,8 @@
 import {Request, Response} from 'express'
-import { generateToken } from '../middlewares/auth'
 import {validationResult, matchedData} from 'express-validator'
-import bcrypt from 'bcrypt'
 
+//Service
 import * as AuthService from '../services/AuthService'
-
-//models
-import User from '../models/User'
-import Profile from '../models/Profile'
 
 export const signUp = async(req:Request, res:Response) => {
    const errors = validationResult(req)
@@ -35,15 +30,11 @@ export const signIn = async (req:Request, res:Response) => {
 
    const data = matchedData(req)
 
-   //If Email already exists...
-   const user = await User.findOne({email: data?.email})
-   if(!user) return res.json({error: 'Email ou senha errados'})
-
-   //If Password is wrong...
-   const passMatch = bcrypt.compareSync(data?.password, user?.password)
-   if(!passMatch) return res.json({error: 'Email ou senha errados'})
-
-   const token = generateToken(user?.id)
+   const token = await AuthService.login(data?.email, data?.password)
+   if(token instanceof Error){
+      res.status(500).json({error: token.message})
+      return
+   }
 
    res.json({status:token})
 }

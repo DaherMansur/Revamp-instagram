@@ -33,3 +33,17 @@ export const createUser = async(data:IUser)  => {
 
    return token
 }
+
+export const login = async(email:string, password:string) => {
+
+   const user = await User.findOne({email})
+   if(!user) return new Error('Email ou senha errados')
+
+   //If Password is wrong...
+   const passMatch = bcrypt.compareSync(password, user?.password)
+   if(!passMatch) return new Error('Email ou senha errados')
+
+   const token = generateToken(user?.id)
+
+   return token
+}
