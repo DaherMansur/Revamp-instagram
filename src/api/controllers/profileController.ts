@@ -7,27 +7,23 @@ import fs from 'fs'
 import User from '../models/User'
 import Profile, {IProfile} from '../models/Profile'
 
+//Services
+import * as ProfileService from '../services/ProfileService'
+
 export const getProfile = async(req:Request, res:Response) => {
    const username = req.params.username as string
 
-   const user = req.user as InstanceType<typeof User>
-
-   let userId
-   if(username === user?.username) {
-      userId = user?.id
-
-   }else { 
-      const notUser = await User.findOne({username})
-      if(!notUser) return res.json({error: 'Usuário não encontrado'})
-
-      userId = notUser?.id
-   }
-   const profile = await Profile.findOne({user: userId})
-      .populate<{user: typeof User}>
-      ({path: 'user', select: 'username'})
+   const profile = await ProfileService.findProfile(username)
+   if(profile instanceof Error) return res.json({error: profile.message})
    
+   const editable = await ProfileService.checkEditable(username, req.user)
 
-   res.json({status: profile})
+   const data = {
+      editable, 
+      profile
+   }
+
+   res.json({data})
 }
 
 export const edit = async (req:Request, res:Response) => {

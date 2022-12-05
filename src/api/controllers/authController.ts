@@ -21,7 +21,7 @@ export const signUp = async(req:Request, res:Response) => {
       return
    }
 
-   res.json({status: token})
+   res.json({token})
 }
 
 export const signIn = async (req:Request, res:Response) => {
@@ -36,5 +36,5 @@ export const signIn = async (req:Request, res:Response) => {
       return
    }
 
-   res.json({status:token})
+   res.json({token})
 }

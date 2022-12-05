@@ -25,6 +25,7 @@ passport.use(new JwtStategy(options, async(payload, done) => {
    }
 }))
 
+//Only logged user can see it
 export const privateRoute = (req:Request, res:Response, next:NextFunction) => {
    const authFunction = passport.authenticate('jwt', (err, user) => {
       if(user){
@@ -32,6 +33,19 @@ export const privateRoute = (req:Request, res:Response, next:NextFunction) => {
          next()
       } else {
          next(notAuthorizedJson)
+      }
+   })
+   authFunction(req, res, next)
+}
+
+//Publics Routes means everyone can see it.
+export const publicRoute = (req:Request, res:Response, next:NextFunction) => {
+   const authFunction = passport.authenticate('jwt', (err, user) => {
+      if(user){
+         req.user = user
+         next()
+      } else {
+         next()
       }
    })
    authFunction(req, res, next)

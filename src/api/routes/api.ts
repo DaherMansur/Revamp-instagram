@@ -1,7 +1,7 @@
 import {Request, Response, Router} from 'express'
 
 //Middlewares
-import { privateRoute } from '../middlewares/auth'
+import { privateRoute, publicRoute } from '../middlewares/auth'
 import {uploadFiles, uploadAvatar} from '../middlewares/multer'
 
 //Validators
@@ -24,7 +24,7 @@ router.post('/signup', AuthValidator.register, authController.signUp) //Register
 router.post('/signin', AuthValidator.login, authController.signIn) //Login
 
 //Profile - Account
-router.get('/:username', privateRoute, profileController.getProfile)
+router.get('/:username', publicRoute, profileController.getProfile)
 
 router.post('/accounts/edit', 
    privateRoute, //Middleware for Auth
