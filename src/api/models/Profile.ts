@@ -5,7 +5,7 @@ export enum EFollow {
    Unfollow = 'unfollow'
 }
 
-interface Photo{
+export interface Photo{
    url: string
 }
 

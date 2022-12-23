@@ -50,3 +50,4 @@ export default (connection && connection.models[modelName]) ?
    connection.models[modelName] as Model<IPost>
    :
    model<IPost>(modelName, schema)
+
