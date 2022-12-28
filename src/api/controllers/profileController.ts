@@ -40,10 +40,6 @@ export const edit = async (req:Request, res:Response) => {
       gender: data.gender,
       photo: [photoName]
    }
-   // if(file) {
-   //    const photoName = await ProfileService.processPhoto(file, profile?.id)
-   //    updates.photo?.push({photoName})
-   // }
 
    await ProfileService.updateProfile(updates, profile?.id)
 

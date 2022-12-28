@@ -7,12 +7,12 @@ interface Comments {
    //date?
 }
 
-interface Files{
+export interface Files{
    url: string,
    default: number
 }
 
-interface Hashtag {
+export interface Hashtag {
    name: string
 }
 

@@ -74,7 +74,7 @@ export const addPhoto = async(file:Express.Multer.File | undefined) => {
 }
 
 // Function that adds new photo if uploaded,
-// if it is not, it returns the photo that is on the user.
+// if it is not, it returns the photo that is on the profile.
 export const processPhoto = async(file:Express.Multer.File | undefined, id:string) => {
    let photo = await addPhoto(file)
    if(!photo) return await findPhoto(id) as Photo

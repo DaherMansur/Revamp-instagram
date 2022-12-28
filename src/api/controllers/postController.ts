@@ -9,70 +9,32 @@ import User from "../models/User"
 import Post, { IPost } from "../models/Post"
 import Profile from "../models/Profile"
 
+//Services
+import * as PostService from '../services/PostService'
+
 export const createPost = async(req:Request, res:Response) => {
    let {caption} = req.body
 
    const files = req.files as Express.Multer.File[]
 
-   const user = req.user as InstanceType<typeof User>
-   const profile = await Profile.findOne({user: user?.id})
-   if(!profile) return res.json({error: 'Perfil não existe'})
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
 
-   const newPost = new Post()
-   newPost.profile = profile?.id
+   const captionText = PostService.captionLength(caption)
+   if(captionText instanceof Error) return res.json({error: captionText.message})
 
-   if(caption){
-      if(caption.length > 2200) return res.json({error: 'A legenda excedeu o número de caracteres(2200)'})
-      
-      for(let i = 0; i < caption.length; i++){
-         let startOfTag = caption.indexOf('#', i)
-         if(startOfTag === -1) break
-         
-         let endOfTag = caption.indexOf(' ', startOfTag)
-         if(endOfTag === -1) caption += ' '
+   const hashtag = PostService.processHashtag(captionText)
 
-         let tag = caption.substr(startOfTag, endOfTag-startOfTag)
-         if(tag && tag.length > 1) {
-            newPost.hashtag?.push({name: tag})
-         }
-      
-         i = endOfTag
-      }
-      newPost.caption = caption
+   const media = await PostService.addPhoto(files)
+
+   const post:PostService.IPost = {
+      profile: profile?.id, 
+      caption: captionText,
+      hashtag,
+      files: media,
    }
 
-   let media = []
-   if(files){
-
-      for(let i in files){
-         let filename = files[i].filename
-         let [type, extension] = files[i].mimetype.split('/')
-
-         if(type === 'image'){
-            await sharp(files[i].path)
-               .toFile(`./public/assets/media/${filename}.${extension}`)
-
-            sharp.cache(false)
-            unlink(files[i].path)
-         }
-
-         if(type === 'video'){
-            let filename = files[i].filename
-            let oldPath = files[i].path
-            let newPath = `./public/assets/media/${filename}.${extension}`
-            fs.rename(oldPath, newPath, (err) => {
-               if(err) console.log(err)
-            })
-         }
-         media.push({
-            url: `${filename}.${extension}`,
-            default: parseInt(i)
-         }) 
-      }
-   }
-
-   newPost.files = media
-   await newPost.save()
+   const newPost = await PostService.createNewPost(post)
    res.json({status:newPost})
 }
 
