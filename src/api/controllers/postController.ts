@@ -25,7 +25,7 @@ export const createPost = async(req:Request, res:Response) => {
 
    const hashtag = PostService.processHashtag(captionText)
 
-   const media = await PostService.addPhoto(files)
+   const media = await PostService.processMedia(files, undefined)
 
    const post:PostService.IPost = {
       profile: profile?.id, 
@@ -42,92 +42,39 @@ export const editPost = async(req:Request, res:Response) => {
    let {caption, delMedia} = req.body
    let {id} = req.params
 
-   if(!mongoose.Types.ObjectId.isValid(id)) {
-      res.json({error: 'ID Inválido'})
-      return
-   }
+   const validId = await PostService.validId(id)
+   if(validId instanceof Error) return res.json({error: validId.message})
 
    const files = req.files as Express.Multer.File[]
 
-   const user = req.user as InstanceType<typeof User>
-   const profile = await Profile.findOne({user: user?.id})
-   if(!profile) return res.json({error: 'Perfil não existe'})
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
 
-   const post = await Post.findById(id)
-   if(!post) return res.json({error: 'Post não existe'})
+   const post = await PostService.findPostEditable(id, profile?.id)
+   if(post instanceof Error) return res.json({error: post.message})
+   
+   const media = await PostService.processMedia(files, post?.files)
 
    const updates:IPost = {
-      caption: caption ?? post?.caption
-   }
-
-   if(files){
-      let error = false
-      let media = []
-
-      let order = post?.files?.length
-      for(let i in files){
-         if(post.files && post.files?.length >= 10) {
-            error = true
-            break 
-         }
-
-         let filename = files[i].filename
-         let [type, extension] = files[i].mimetype.split('/')
-
-         if(type === 'image'){
-            await sharp(files[i].path)
-               .toFile(`./public/assets/media/${filename}.${extension}`)
-
-            sharp.cache(false)
-            unlink(files[i].path)
-         }
-         
-         if(type === 'video'){
-            let filename = files[i].filename
-            let oldPath = files[i].path
-            let newPath = `./public/assets/media/${filename}.${extension}`
-            fs.rename(oldPath, newPath, (err) => {
-               if(err) console.log(err)
-            })
-         }
-
-         let newOrder = parseInt(i)
-         if(order){
-            var newValue = parseInt(i)
-            newOrder = (newValue + order)
-         }
-
-         media.push({
-            url: filename,
-            default: newOrder
-         })
-      }
-
-      if(error) return res.json({error: 'Excedeu o limite de media(10)'})
-      
-      await post.updateOne({
-         $push: { files: media },
-      })
+      profile: profile?.id,
+      caption: caption ?? post?.caption,
+      files: media
    }
 
    if(delMedia){ //Delete Media
-      let asset = false
-      post?.files?.forEach((e) => {
-         if(e.url == delMedia){
-            asset = true
-         }
-      })
-
-      if(asset) {
-         await post?.updateOne({$pull: {
-            files: {url: delMedia}
-         }})
-         unlink(`./public/assets/media/${delMedia}`)
-      } else {
-         return res.json({error: 'Imagem não encontrada'})
-      }
+      let asset = post?.files?.find(e => e.url)
+      console.log(asset)
+      // if(asset) {
+      //    await post?.updateOne({$pull: {
+      //       files: {url: delMedia}
+      //    }})
+      //    unlink(`./public/assets/media/${delMedia}`)
+      // } else {
+      //    return res.json({error: 'Imagem não encontrada'})
+      // }
    }
 
+   await Post.findByIdAndUpdate(id, {$set: updates})   
    res.json({status: updates})
 }
 
