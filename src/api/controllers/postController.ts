@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import sharp from "sharp";
 import { unlink } from "fs/promises";
 import fs from 'fs'
-import mongoose from "mongoose";
+import mongoose, { WindowOperatorReturningNumber } from "mongoose";
 
 //Models
 import User from "../models/User"
@@ -61,21 +61,24 @@ export const editPost = async(req:Request, res:Response) => {
       files: media
    }
 
-   if(delMedia){ //Delete Media
-      let asset = post?.files?.find(e => e.url)
-      console.log(asset)
-      // if(asset) {
-      //    await post?.updateOne({$pull: {
-      //       files: {url: delMedia}
-      //    }})
-      //    unlink(`./public/assets/media/${delMedia}`)
-      // } else {
-      //    return res.json({error: 'Imagem não encontrada'})
-      // }
-   }
-
    await Post.findByIdAndUpdate(id, {$set: updates})   
    res.json({status: updates})
+}
+
+export const deleteMedia = async(req:Request, res:Response) => {
+   const filename = req.body.filename as string
+   const {id} = req.params
+
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const post = await PostService.findPostEditable(id, profile?.id)
+   if(post instanceof Error) return res.json({error: post.message})
+
+   const media = await PostService.deleteMediaAndReOrder(filename, post?.files)
+   if(media instanceof Error) return res.json({error: media.message})
+
+   res.json({media})
 }
 
 export const getPost = async (req:Request, res:Response) => {
@@ -97,3 +100,5 @@ export const getPost = async (req:Request, res:Response) => {
 
    res.json({status: post})
 }
+
+

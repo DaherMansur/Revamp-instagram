@@ -16,7 +16,7 @@ export interface Hashtag {
    name: string
 }
 
-export interface IPost {
+export interface IPost  {
    profile: Types.ObjectId,
    caption?: string,
    hashtag?: Array<Hashtag>,

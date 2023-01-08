@@ -29,7 +29,6 @@ export const checkEditable = async(idProfileUser:string, idProfilePost:string) =
    }
 }
 
-
 export const captionLength = (caption:string) => {
    if(caption.length > 2200) return new Error('A legenda excedeu o número de caracteres(2200)')
    return caption
@@ -98,7 +97,7 @@ export const processMedia = async(files:Express.Multer.File[], mediaPost:Files[]
       media = mediaPost
       order = mediaPost?.length
    }
-   
+
    for(let i in files) {
       const filename = await addPhotoStorage(files, i)
       const newOrder = await reOrderMedia(i, order)
@@ -120,29 +119,6 @@ export const findPostEditable = async(idPost:string, idProfileUser:string) => {
    return post
 }
 
-// export const reOrderMedia = async(media:Files, id:string) => {
-//    const files:Files[] = []
-//    const post = await Post.findById(id)
-   
-//    let order = post?.files?.length
-//    function reOrder(i:string) {
-//       let newOrder = parseInt(i)
-//       if(order){
-//          var newValue = parseInt(i)
-//          newOrder = (newValue + order)
-//       }
-//       return newOrder
-//    }
-//    // for(let i in media) {
-      
-//    //    files.push({
-//    //       url: media?.url,
-//    //       default: newOrder
-//    //    })
-//    // }
-//    return files
-// }
-
 export const createNewPost = async(data:IPost) => {
    
    const newPost = new Post(data)
@@ -150,5 +126,49 @@ export const createNewPost = async(data:IPost) => {
    return newPost
 }
 
-//
+export const deleteMediaAndReOrder = async(filename:string, files: Files[] | undefined) => {
+   let media:Files[] = []
 
+   if(!files) return new Error('Imagem não encontrada')
+
+   if(files){
+      let fileOrder:number | null = null
+      let newOrder:number
+
+      for(let i in files){
+         
+         
+         if(filename == files[i].url) {
+            fileOrder = files[i].default
+            console.log(fileOrder)
+            let pathUrl = `./public/assets/media/${filename}`
+            if(fs.existsSync(pathUrl)){
+               await unlink(pathUrl)
+            }
+            continue
+         }
+
+         newOrder = parseInt(i)
+         if(fileOrder && fileOrder < files[i].default) {
+            newOrder = (newOrder - 1)
+         } else {
+            newOrder = parseInt(i)
+            if(fileOrder == 0) {
+               newOrder = (newOrder - 1)
+            }
+         }
+
+         console.log(
+            fileOrder,
+            files[i].default,
+            newOrder
+         )
+         
+         media.push({
+            url: files[i].url,
+            default: newOrder
+         })
+      }
+   }
+   return media
+}

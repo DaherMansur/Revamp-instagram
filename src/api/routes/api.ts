@@ -36,6 +36,7 @@ router.post('/accounts/edit',
 //Post
 router.post('/post/create', privateRoute, uploadFiles, postController.createPost)
 router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost) //EDIT ROUTE
+router.delete('/post/delmedia/:id', privateRoute, postController.deleteMedia) //Delete Media
 router.get('/post/:id', postController.getPost)
 
 
