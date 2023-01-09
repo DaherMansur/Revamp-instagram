@@ -78,7 +78,8 @@ export const addPhotoStorage = async(files:Express.Multer.File[], x:string) => {
          if(err) console.log(err)
       })
    }
-   return filename
+   let file = `${filename}.${extension}`
+   return file
 }
 
 export const reOrderMedia = async(i:string, order: number | undefined) => {
@@ -110,6 +111,8 @@ export const processMedia = async(files:Express.Multer.File[], mediaPost:Files[]
 }
 
 export const findPostEditable = async(idPost:string, idProfileUser:string) => {
+   
+
    const post = await Post.findById(idPost)
    if(!post) return new Error('Post não existe')
 
@@ -126,6 +129,10 @@ export const createNewPost = async(data:IPost) => {
    return newPost
 }
 
+export const updatePost = async(id:string, update:IPost) => {
+   await Post.findByIdAndUpdate(id, {$set: update})   
+}
+
 export const deleteMediaAndReOrder = async(filename:string, files: Files[] | undefined) => {
    let media:Files[] = []
 
@@ -137,10 +144,8 @@ export const deleteMediaAndReOrder = async(filename:string, files: Files[] | und
 
       for(let i in files){
          
-         
          if(filename == files[i].url) {
             fileOrder = files[i].default
-            console.log(fileOrder)
             let pathUrl = `./public/assets/media/${filename}`
             if(fs.existsSync(pathUrl)){
                await unlink(pathUrl)
@@ -157,13 +162,6 @@ export const deleteMediaAndReOrder = async(filename:string, files: Files[] | und
                newOrder = (newOrder - 1)
             }
          }
-
-         console.log(
-            fileOrder,
-            files[i].default,
-            newOrder
-         )
-         
          media.push({
             url: files[i].url,
             default: newOrder
@@ -171,4 +169,19 @@ export const deleteMediaAndReOrder = async(filename:string, files: Files[] | und
       }
    }
    return media
+}
+
+export const getPostPopulate = async(id:string) => {
+   const isValidId = await validId(id)
+   if(isValidId instanceof Error) return isValidId.message
+
+   const post = await Post.findById(id)
+      .populate<{profile: typeof Profile}>
+      ({path: 'profile'})
+
+   if(!post) {
+      return new Error('Post não existe')
+   }
+
+   return post
 }
