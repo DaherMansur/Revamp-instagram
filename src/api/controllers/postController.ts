@@ -66,16 +66,8 @@ export const deleteMedia = async(req:Request, res:Response) => {
    const post = await PostService.findPostEditable(id, profile?.id)
    if(post instanceof Error) return res.json({error: post.message})
 
-   const media = await PostService.deleteMediaAndReOrder(filename, post?.files)
-   if(media instanceof Error) return res.json({error: media.message})
-
-   const updates:PostService.IPost = {
-      profile: profile?.id,
-      files: media
-   }
-
-   await PostService.updatePost(id, updates)
-   res.json({media})
+   await PostService.removeMedia(filename, post?.id)
+   res.json({media:true})
 }
 
 export const getPost = async (req:Request, res:Response) => {

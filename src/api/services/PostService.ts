@@ -119,40 +119,17 @@ export const updatePost = async(id:string, update:IPost) => {
    await Post.findByIdAndUpdate(id, {$set: update})   
 }
 
-export const deleteMediaAndReOrder = async(filename:string, files: Files[] | undefined) => {
-   let media:Files[] = []
+export const removeMedia = async(filename:string, idPost:string) => {
+   await Post.updateOne({_id: idPost}, {$pull: {
+      files: {url: filename}
+   }})
 
-   if(!files) return new Error('Imagem não encontrada')
-
-   if(files){
-      let fileOrder:number | null = null
-      let newOrder:number
-
-      for(let i in files){
-         
-         if(filename == files[i].url) {
-            let pathUrl = `./public/assets/media/${filename}`
-            if(fs.existsSync(pathUrl)){
-               await unlink(pathUrl)
-            }
-            continue
-         }
-
-         newOrder = parseInt(i)
-         if(fileOrder) {
-            newOrder = (newOrder - 1)
-         } else {
-            newOrder = parseInt(i)
-            if(fileOrder == 0) {
-               newOrder = (newOrder - 1)
-            }
-         }
-         media.push({
-            url: files[i].url
-         })
-      }
+   let pathUrl = `./public/assets/media/${filename}`
+   if(fs.existsSync(pathUrl)){
+      await unlink(pathUrl)
    }
-   return media
+
+   return true
 }
 
 export const getPostPopulate = async(id:string) => {
