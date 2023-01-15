@@ -8,8 +8,7 @@ interface Comments {
 }
 
 export interface Files{
-   url: string,
-   default: number
+   url: string
 }
 
 export interface Hashtag {
@@ -34,7 +33,6 @@ const schema = new Schema<IPost>({
    likes: {type: Schema.Types.ObjectId, ref: 'Profile'},
    files: [{
       url: {type: String},
-      default: {type: Number},
       _id: false
    }],
    comments: [{

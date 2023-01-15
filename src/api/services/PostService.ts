@@ -82,36 +82,22 @@ export const addPhotoStorage = async(files:Express.Multer.File[], x:string) => {
    return file
 }
 
-export const reOrderMedia = async(i:string, order: number | undefined) => {
-   let newOrder = parseInt(i)
-   if(order){
-      var newValue = parseInt(i)
-      newOrder = (newValue + order)
-   }
-   return newOrder
-}
-
 export const processMedia = async(files:Express.Multer.File[], mediaPost:Files[] | undefined) => {
    let media:Files[] = []
-   let order = undefined
    if(mediaPost){
       media = mediaPost
-      order = mediaPost?.length
    }
 
    for(let i in files) {
       const filename = await addPhotoStorage(files, i)
-      const newOrder = await reOrderMedia(i, order)
       media.push({
-         url: filename,
-         default: newOrder
+         url: filename
       })
    }
    return media
 }
 
 export const findPostEditable = async(idPost:string, idProfileUser:string) => {
-   
 
    const post = await Post.findById(idPost)
    if(!post) return new Error('Post não existe')
@@ -145,7 +131,6 @@ export const deleteMediaAndReOrder = async(filename:string, files: Files[] | und
       for(let i in files){
          
          if(filename == files[i].url) {
-            fileOrder = files[i].default
             let pathUrl = `./public/assets/media/${filename}`
             if(fs.existsSync(pathUrl)){
                await unlink(pathUrl)
@@ -154,7 +139,7 @@ export const deleteMediaAndReOrder = async(filename:string, files: Files[] | und
          }
 
          newOrder = parseInt(i)
-         if(fileOrder && fileOrder < files[i].default) {
+         if(fileOrder) {
             newOrder = (newOrder - 1)
          } else {
             newOrder = parseInt(i)
@@ -163,8 +148,7 @@ export const deleteMediaAndReOrder = async(filename:string, files: Files[] | und
             }
          }
          media.push({
-            url: files[i].url,
-            default: newOrder
+            url: files[i].url
          })
       }
    }
@@ -185,3 +169,4 @@ export const getPostPopulate = async(id:string) => {
 
    return post
 }
+
