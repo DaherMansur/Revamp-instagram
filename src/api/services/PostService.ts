@@ -132,6 +132,29 @@ export const removeMedia = async(filename:string, idPost:string) => {
    return true
 }
 
+export const spliceMedia = async (filename:string, moveTo:number, files: Files[] | undefined) => {
+   if(files){
+      let changeOrder = files.map(e => e.url)
+      let file = changeOrder.indexOf(filename)
+      let oldIndex = file
+         
+      if(file !== -1){
+         if(file > moveTo){
+            oldIndex = (file + 1)
+         }
+         changeOrder.splice(moveTo, 0, filename) //MoveTo
+         changeOrder.splice(oldIndex, 1) //Delete old Index
+      }
+   
+      const newOrder:Files[] = []
+      for(let i in changeOrder){
+         newOrder.push({url: changeOrder[i]})
+      }
+   
+      return newOrder
+   }
+}
+
 export const getPostPopulate = async(id:string) => {
    const isValidId = await validId(id)
    if(isValidId instanceof Error) return isValidId.message

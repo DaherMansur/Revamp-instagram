@@ -7,6 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 Endpoints.md
 Arquivos.md
+public/assets/media
 test.ts
 
 # Diagnostic reports (https://nodejs.org/api/report.html)

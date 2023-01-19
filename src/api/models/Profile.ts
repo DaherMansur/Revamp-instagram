@@ -11,7 +11,7 @@ export interface Photo{
 
 interface Follow {
    idProfile: Types.ObjectId, //idProfile?
-   follow?: EFollow
+   // follow?: EFollow
 }
 
 export interface IProfile {
@@ -40,8 +40,16 @@ const schema = new Schema({
       idProfile: {type: Schema.Types.ObjectId, ref: 'Profile'},
       follow: {
          type:String,
-         enum: EFollow,
-         default: 'unfollow'
+         // enum: EFollow,
+         // default: 'unfollow'
+      }
+   }],
+   followers: [{
+      idProfile: {type: Schema.Types.ObjectId, ref: 'Profile'},
+      follow: {
+         type:String,
+         // enum: EFollow,
+         // default: 'unfollow'
       }
    }]
 })

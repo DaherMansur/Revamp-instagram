@@ -26,6 +26,7 @@ router.post('/signin', AuthValidator.login, authController.signIn) //Login
 
 //Profile - Account
 router.get('/:username', publicRoute, profileController.getProfile)
+router.post('/:username/follow', privateRoute, profileController.follow)
 
 router.post('/accounts/edit', 
    privateRoute, //Middleware for Auth
@@ -38,7 +39,7 @@ router.post('/accounts/edit',
 router.post('/post/create', privateRoute, uploadFiles, postController.createPost)
 router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost) //EDIT ROUTE
 router.delete('/post/delmedia/:id', privateRoute, postController.deleteMedia) //Delete Media
-
+router.put('/post/reorder/:id', privateRoute, postController.reOrderMedia)
 router.get('/post/:id', postController.getPost)
 
 //Search

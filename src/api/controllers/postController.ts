@@ -79,4 +79,23 @@ export const getPost = async (req:Request, res:Response) => {
    res.json({status: post})
 }
 
+export const reOrderMedia = async (req:Request, res:Response) => {
+   const fileOne = req.body.filename as string
+   const moveTo = req.body.moveTo as number
+   const {id} = req.params
 
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const post = await PostService.findPostEditable(id, profile?.id)
+   if(post instanceof Error) return res.json({error: post.message})
+
+   const newOrder = await PostService.spliceMedia(fileOne, moveTo, post?.files)
+
+   const updates:PostService.IPost = {
+      profile: profile?.id,
+      files: newOrder
+   }
+   await PostService.updatePost(id, updates)
+   res.json({status:updates})
+}

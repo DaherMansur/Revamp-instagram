@@ -97,3 +97,15 @@ export const updateProfile = async(data:IProfile, id:string) => {
    }
    await profile?.updateOne(updates)
 }
+
+export const setFollowing = async(username:string) => {
+   const profile = await findProfile(username)
+   
+
+   // console.log(profile)
+   // if(profile instanceof Error) return profile.message
+
+   // const teste = profile?.followers
+
+   return profile
+}
