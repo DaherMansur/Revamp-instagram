@@ -46,13 +46,13 @@ export const edit = async (req:Request, res:Response) => {
    res.json({status: updates})
 }
 
-export const follow = async(req:Request, res:Response) => {
+export const followProfile = async(req:Request, res:Response) => {
    const username = req.params.username as string
    
    const profile = await ProfileService.userProfile(req.user)
    if(profile instanceof Error) return res.json({error: profile.message})
 
-   const getProfile = await ProfileService.setFollowing(username)
+   const getProfile = await ProfileService.setFollowing(username, profile?.id)
 
    res.json({status: getProfile})
 }

@@ -26,7 +26,7 @@ router.post('/signin', AuthValidator.login, authController.signIn) //Login
 
 //Profile - Account
 router.get('/:username', publicRoute, profileController.getProfile)
-router.post('/:username/follow', privateRoute, profileController.follow)
+router.post('/:username/follow', privateRoute, profileController.followProfile)
 
 router.post('/accounts/edit', 
    privateRoute, //Middleware for Auth

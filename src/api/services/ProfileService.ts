@@ -4,7 +4,8 @@ import fs from 'fs'
 
 //Models
 import User from '../models/User'
-import Profile, {IProfile, Photo} from '../models/Profile'
+import Profile, {IProfile, Photo, Follow} from '../models/Profile'
+import mongoose, {Types} from 'mongoose'
 
 export {IProfile} 
 
@@ -29,7 +30,7 @@ export const checkEditable = async(username:string, reqUser:Express.User | undef
 
 export const findProfile = async(username:string) => {
    const user = await User.findOne({username})
-   if(!user) return new Error('Perfil não encontrado')
+   // if(!user) return new Error('Perfil não encontrado')
 
    const profile = await Profile.findOne({user: user?.id})
       .populate<{user: typeof User}>
@@ -93,19 +94,47 @@ export const updateProfile = async(data:IProfile, id:string) => {
       website: data.website ?? profile?.website,
       celphone: data.celphone ?? profile?.celphone,
       gender: data.gender ?? profile?.gender,
+      followers: data.followers ?? profile?.followers,
       photo: data.photo
    }
    await profile?.updateOne(updates)
 }
 
-export const setFollowing = async(username:string) => {
+export const setFollowing = async(username:string, idUser:Types.ObjectId) => {
    const profile = await findProfile(username)
+   let following = profile?.followers?.find(e => e.idProfile == idUser)
    
+   if(!following) { //Follow User
+     await Profile.findByIdAndUpdate(profile?.id, {
+      $push: {
+         followers: {
+            idProfile: idUser
+         }
+      }})
 
-   // console.log(profile)
-   // if(profile instanceof Error) return profile.message
+      await Profile.findByIdAndUpdate(idUser, {
+         $push: {
+            following: {
+               idProfile: profile?.id
+            }
+      }})
+      
+      return true
+   } 
+   else { //UnFollow User
+      await Profile.findByIdAndUpdate(profile?.id, {
+         $pull: {
+            followers: {
+               idProfile: idUser
+            }
+      }})
 
-   // const teste = profile?.followers
-
-   return profile
+      await Profile.findByIdAndUpdate(idUser, {
+         $pull: {
+            following: {
+               idProfile: profile?.id
+            }
+      }})
+      return false
+   }
 }
