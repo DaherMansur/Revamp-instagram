@@ -40,6 +40,7 @@ router.post('/post/create', privateRoute, uploadFiles, postController.createPost
 router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost) //EDIT ROUTE
 router.delete('/post/delmedia/:id', privateRoute, postController.deleteMedia) //Delete Media
 router.put('/post/reorder/:id', privateRoute, postController.reOrderMedia)
+router.post('/post/:id/like', privateRoute, postController.likePost)
 router.get('/post/:id', postController.getPost)
 
 //Search

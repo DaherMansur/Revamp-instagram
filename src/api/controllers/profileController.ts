@@ -52,7 +52,7 @@ export const followProfile = async(req:Request, res:Response) => {
    const profile = await ProfileService.userProfile(req.user)
    if(profile instanceof Error) return res.json({error: profile.message})
 
-   const getProfile = await ProfileService.setFollowing(username, profile?.id)
+   const getFollow = await ProfileService.setFollowing(username, profile?.id)
 
-   res.json({status: getProfile})
+   res.json({status: getFollow})
 }

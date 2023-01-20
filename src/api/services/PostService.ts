@@ -1,12 +1,12 @@
 import sharp from "sharp";
 import { unlink } from "fs/promises";
 import fs from 'fs'
-import mongoose from "mongoose";
+import mongoose, {Types} from "mongoose";
 
 //models
 import User from '../models/User'
 import Profile from '../models/Profile'
-import Post, { IPost, Hashtag, Files } from '../models/Post'
+import Post, { IPost, Hashtag, Files, Likes } from '../models/Post'
 
 export {IPost}
 
@@ -168,5 +168,34 @@ export const getPostPopulate = async(id:string) => {
    }
 
    return post
+}
+
+export const setLike = async(id:string, idProfile:Types.ObjectId) => {
+
+   const post = await Post.findById(id)
+   if(!post) return new Error('Post não existe')
+
+   const likes = post?.likes?.find(e => e.user == idProfile)
+
+   if(!likes){ //Like the Post
+      await Post.findByIdAndUpdate(id, {
+         $push: {
+            likes: {
+               user: idProfile
+            }
+         }
+      })
+      return true
+   } 
+   else { //Dislike the Post
+      await Post.findByIdAndUpdate(id, {
+         $pull: {
+            likes: {
+               user: idProfile
+            }
+         }
+      })
+      return false
+   }
 }
 

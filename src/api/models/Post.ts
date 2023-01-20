@@ -15,12 +15,16 @@ export interface Hashtag {
    name: string
 }
 
+export interface Likes {
+   user: Types.ObjectId
+}
+
 export interface IPost  {
    profile: Types.ObjectId,
    caption?: string,
    hashtag?: Array<Hashtag>,
    createdAt?: Date,
-   likes?: Types.ObjectId,
+   likes?: Array<Likes>,
    comments?: Array<Comments>,
    files?: Array<Files>
 }
@@ -30,7 +34,10 @@ const schema = new Schema<IPost>({
    caption: {type: String, trim: true},
    hashtag: [{name: String}],
    createdAt: {type: Date, default: Date.now},
-   likes: {type: Schema.Types.ObjectId, ref: 'Profile'},
+   likes: [{
+      user: {type: Schema.Types.ObjectId, ref: 'Profile'},
+      _id: false
+   }],
    files: [{
       url: {type: String},
       _id: false

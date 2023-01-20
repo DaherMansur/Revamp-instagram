@@ -99,3 +99,14 @@ export const reOrderMedia = async (req:Request, res:Response) => {
    await PostService.updatePost(id, updates)
    res.json({status:updates})
 }
+
+export const likePost = async(req:Request, res:Response) => {
+   const id = req.params.id as string
+
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const like = await PostService.setLike(id, profile?.id)
+
+   res.json({like})
+}
