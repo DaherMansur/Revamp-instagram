@@ -110,3 +110,30 @@ export const likePost = async(req:Request, res:Response) => {
 
    res.json({like})
 }
+
+export const commentPost = async(req:Request, res:Response) => {
+   const id = req.params.id as string
+   const comment = req.body.comment as string
+
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const commentPost = await PostService.setComment(comment, id, profile?.id)
+   if(commentPost instanceof Error) return res.json({error: commentPost.message})
+
+   res.json({commentPost})
+}
+
+export const replyPost = async (req:Request, res:Response) => {
+   const idPost = req.params.id as string
+   const idreply = req.body.idreply as any
+   const comment = req.body.comment as string
+
+   const profile = await PostService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const replyPost = await PostService.setReply(comment, idPost, idreply, profile?.id)
+   if(replyPost instanceof Error) return res.json({error: replyPost.message})
+
+   res.json({replyPost})
+}

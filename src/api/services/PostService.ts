@@ -6,7 +6,7 @@ import mongoose, {Types} from "mongoose";
 //models
 import User from '../models/User'
 import Profile from '../models/Profile'
-import Post, { IPost, Hashtag, Files, Likes } from '../models/Post'
+import Post, { IPost, Hashtag, Files } from '../models/Post'
 
 export {IPost}
 
@@ -199,3 +199,43 @@ export const setLike = async(id:string, idProfile:Types.ObjectId) => {
    }
 }
 
+export const setComment = async(comment:string, id:string, idUser:Types.ObjectId) => {
+   const isValid = await validId(id)
+   if(isValid instanceof Error) return isValid.message
+
+   const post = await Post.findByIdAndUpdate(id, {
+      $push: {
+         comments: {
+            idUser,
+            comment
+         }
+      }
+   })
+   if(!post) return new Error('Post não existe')
+   return post
+}
+
+export const setReply = async(comment:string, id:string, idreply:Types.ObjectId, idUser:Types.ObjectId) => {
+   
+   const isValid = await validId(id)
+   if(isValid instanceof Error) return isValid.message
+
+   const post = await Post.findOneAndUpdate({
+      _id: id,
+      comments: {
+         $elemMatch: {
+            _id: idreply
+         },
+      },
+   }, {
+      $push:{
+         "comments.$.reply": {
+            idUser,
+            comment
+         }
+      }
+   })
+
+   if(!post) return new Error('Post não existe')
+   return post
+}

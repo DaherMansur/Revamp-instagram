@@ -41,6 +41,8 @@ router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost
 router.delete('/post/delmedia/:id', privateRoute, postController.deleteMedia) //Delete Media
 router.put('/post/reorder/:id', privateRoute, postController.reOrderMedia)
 router.post('/post/:id/like', privateRoute, postController.likePost)
+router.post('/post/:id/comment', privateRoute, postController.commentPost)
+router.post('/post/:id/reply', privateRoute, postController.replyPost)
 router.get('/post/:id', postController.getPost)
 
 //Search
