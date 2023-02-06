@@ -13,6 +13,7 @@ import * as authController from '../controllers/authController'
 import * as profileController from '../controllers/profileController'
 import * as postController from '../controllers/postController'
 import * as searchController from '../controllers/searchController'
+import * as commentController from '../controllers/commentController'
 
 const router = Router()
 
@@ -41,8 +42,9 @@ router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost
 router.delete('/post/delmedia/:id', privateRoute, postController.deleteMedia) //Delete Media
 router.put('/post/reorder/:id', privateRoute, postController.reOrderMedia)
 router.post('/post/:id/like', privateRoute, postController.likePost)
-router.post('/post/:id/comment', privateRoute, postController.commentPost)
-router.post('/post/:id/reply', privateRoute, postController.replyPost)
+router.post('/post/:id/comment', privateRoute, commentController.commentPost)
+router.post('/post/:id/reply', privateRoute, commentController.replyPost)
+
 router.get('/post/:id', postController.getPost)
 
 //Search

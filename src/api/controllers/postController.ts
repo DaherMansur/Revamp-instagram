@@ -132,7 +132,10 @@ export const replyPost = async (req:Request, res:Response) => {
    const profile = await PostService.userProfile(req.user)
    if(profile instanceof Error) return res.json({error: profile.message})
 
-   const replyPost = await PostService.setReply(comment, idPost, idreply, profile?.id)
+   const isValid = await PostService.validId(idPost)
+   if(isValid instanceof Error) return res.json({error: isValid.message })
+
+   const replyPost = await PostService.setReply(comment, idreply, profile?.id)
    if(replyPost instanceof Error) return res.json({error: replyPost.message})
 
    res.json({replyPost})

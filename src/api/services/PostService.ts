@@ -6,6 +6,7 @@ import mongoose, {Types} from "mongoose";
 //models
 import User from '../models/User'
 import Profile from '../models/Profile'
+import Comment from "../models/Comment";
 import Post, { IPost, Hashtag, Files } from '../models/Post'
 
 export {IPost}
@@ -160,8 +161,18 @@ export const getPostPopulate = async(id:string) => {
    if(isValidId instanceof Error) return isValidId.message
 
    const post = await Post.findById(id)
-      .populate<{profile: typeof Profile}>
-      ({path: 'profile'})
+      .populate<{comments: typeof Comment}>({
+         path: 'comments.idComment',
+         populate: [
+            {path: 'idUser', model: 'Profile'},
+            {path: 'reply.id', model: 'Comment', populate: [
+               {path: 'idUser', model: 'Profile'},
+               {path: 'reply.id', model: 'Comment'}
+            ]}
+         ]
+      })
+      .populate<{profile: typeof Profile}>({path: 'profile'})
+      
 
    if(!post) {
       return new Error('Post não existe')
@@ -215,13 +226,9 @@ export const setComment = async(comment:string, id:string, idUser:Types.ObjectId
    return post
 }
 
-export const setReply = async(comment:string, id:string, idreply:Types.ObjectId, idUser:Types.ObjectId) => {
-   
-   const isValid = await validId(id)
-   if(isValid instanceof Error) return isValid.message
+export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Types.ObjectId) => {
 
    const post = await Post.findOneAndUpdate({
-      _id: id,
       comments: {
          $elemMatch: {
             _id: idreply

@@ -1,11 +1,7 @@
 import {connection, Model, model, Schema, Types} from "mongoose";
 
 interface Comments {
-   idUser: Types.ObjectId,
-   comment: string,
-   //like?:number,
-   date?: Date,
-   reply?: Array<Comments>
+   idComment: Types.ObjectId
 }
 
 export interface Files{
@@ -44,16 +40,9 @@ const schema = new Schema<IPost>({
       _id: false
    }],
    comments: [{
-      idUser: {type: Schema.Types.ObjectId, ref:'Profile'},
-      comment: {type: String},
-      date: {type: Date, default: Date.now},
-      reply: [{
-         idUser: {type: Schema.Types.ObjectId, ref:'Profile'},
-         comment: {type: String},
-         date: {type: Date, default: Date.now}
-      }]
-      //like: {type: Number}
-   }]
+      idComment: {type: Schema.Types.ObjectId, ref: 'Comment'},
+      _id: false
+   }],
 })
 
 const modelName:string = 'Post'
