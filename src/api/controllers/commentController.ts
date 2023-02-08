@@ -32,3 +32,20 @@ export const replyPost = async (req:Request, res:Response) => {
 
    res.json({replyPost})
 }
+
+export const editCommentPost = async(req:Request, res:Response) => {
+   const idPost = req.params.id as string
+   const idComment = req.body.idComment as any
+   const comment = req.body.comment as string
+
+   const profile = await CommentService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const isValid = await CommentService.validId(idPost)
+   if(isValid instanceof Error) return res.json({error: isValid.message })
+
+   const commentUpdate = await CommentService.editComment(comment, idComment, profile?.id)
+   if(commentUpdate instanceof Error) return res.json({error: commentUpdate.message})
+   
+   res.json({commentUpdate})
+}

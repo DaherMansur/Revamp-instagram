@@ -42,8 +42,8 @@ export const setComment = async(comment:string, id:string, idUser:Types.ObjectId
    return newComment
 }
 
-export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Types.ObjectId) => {
-   const reply = await Comment.findOne({_id: idreply});
+export const setReply = async(comment:string, idReply:Types.ObjectId, idUser:Types.ObjectId) => {
+   const reply = await Comment.findOne({_id: idReply});
    if (!reply) return new Error('Comentário não existe');
    if (reply.depth >= reply.maxDepth) return new Error('Profundidade máxima atingida');
 
@@ -56,7 +56,7 @@ export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Typ
    await newComment.save();
 
    await Comment.findOneAndUpdate({
-      _id: idreply,
+      _id: idReply,
    }, {
       $push:{
          reply: {
@@ -66,4 +66,18 @@ export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Typ
    });
 
    return newComment;
+}
+
+export const editComment = async(comment:string, idComment:Types.ObjectId, idUser:Types.ObjectId) => {
+
+   const commentPost = await Comment.findOne({_id: idComment})
+   if(commentPost?.idUser != idUser){
+      return new Error('Você não tem permissão para editar esse comentário ') 
+   }
+
+   commentPost.idUser = idUser
+   commentPost.comment = comment
+   await commentPost.save()
+
+   return commentPost
 }

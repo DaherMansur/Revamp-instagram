@@ -9,21 +9,19 @@ interface IComment {
    maxDepth: number;
  }
 
- const schema = new Schema<IComment>({
-   idUser: { type: Schema.Types.ObjectId, ref: "Profile" },
-   comment: { type: String },
-   date: { type: Date, default: Date.now },
-   reply: [
-     {
-       id: { type: Schema.Types.ObjectId, ref: "Comment" },
-       _id: false,
-     },
-   ],
-   depth: { type: Number, default: 0 },
-   maxDepth: { type: Number, default: 2 },
- });
- 
-
+const schema = new Schema<IComment>({
+  idUser: { type: Schema.Types.ObjectId, ref: "Profile" },
+  comment: { type: String },
+  date: { type: Date, default: Date.now },
+  reply: [
+    {
+      id: { type: Schema.Types.ObjectId, ref: "Comment" },
+      _id: false,
+    },
+  ],
+  depth: { type: Number, default: 0 },
+  maxDepth: { type: Number, default: 2 },
+});
 
 export const modelName:string = 'Comment'
 
