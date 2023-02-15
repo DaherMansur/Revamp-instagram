@@ -49,3 +49,19 @@ export const editCommentPost = async(req:Request, res:Response) => {
    
    res.json({commentUpdate})
 }
+
+export const deleteComment = async (req:Request, res:Response) => {
+   const idPost = req.params.id as string
+   const idComment = req.body.idComment as any
+
+   const profile = await CommentService.userProfile(req.user)
+   if(profile instanceof Error) return res.json({error: profile.message})
+
+   const isValid = await CommentService.validId(idPost)
+   if(isValid instanceof Error) return res.json({error: isValid.message })
+
+   const removeComment = await CommentService.removeComment(idComment, profile?.id)
+   if(removeComment instanceof Error) return res.json({error: removeComment.message})
+
+   res.json({deleted: true})
+}

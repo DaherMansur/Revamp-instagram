@@ -3,7 +3,7 @@ import mongoose, {Types} from "mongoose";
 //models
 import User from '../models/User'
 import Profile from '../models/Profile'
-import Comment from '../models/Comment'
+import Comment, {IComment} from '../models/Comment'
 import Post, { IPost } from '../models/Post'
 
 export {IPost}
@@ -80,4 +80,21 @@ export const editComment = async(comment:string, idComment:Types.ObjectId, idUse
    await commentPost.save()
 
    return commentPost
+}
+
+export const removeComment = async (idComment:Types.ObjectId, idUser:Types.ObjectId) => {
+   const comment = await Comment.findOne({_id: idComment})
+   if (!comment) return new Error('Comentário não encontrado');
+   if(comment?.idUser != idUser){
+      return new Error('Você não tem permissão para editar esse comentário ') 
+   }
+
+   //recursive function
+   if(comment?.reply){
+      for (const replyId of comment?.reply) {
+         await removeComment(replyId.id, idUser);
+      }
+   }
+   await Comment.findByIdAndDelete(idComment);
+   return
 }

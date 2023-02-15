@@ -167,7 +167,7 @@ export const getPostPopulate = async(id:string) => {
             {path: 'idUser', model: 'Profile'},
             {path: 'reply.id', model: 'Comment', populate: [
                {path: 'idUser', model: 'Profile'},
-               {path: 'reply.id', model: 'Comment'}
+               {path: 'reply.id', model: 'Comment'},
             ]}
          ]
       })

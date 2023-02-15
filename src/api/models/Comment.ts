@@ -1,13 +1,17 @@
 import {connection, Model, model, Schema, Types} from "mongoose";
 
-interface IComment {
-   idUser: Types.ObjectId;
-   comment: string;
-   date: Date;
-   reply?: IComment[];
-   depth: number;
-   maxDepth: number;
- }
+export interface IComment {
+  idUser: Types.ObjectId;
+  comment: string;
+  date: Date;
+  reply?: Array<Reply>;
+  depth: number;
+  maxDepth: number;
+}
+
+interface Reply extends IComment{
+  id:Types.ObjectId
+}
 
 const schema = new Schema<IComment>({
   idUser: { type: Schema.Types.ObjectId, ref: "Profile" },
