@@ -37,17 +37,20 @@ router.post('/accounts/edit',
 )
 
 //Post
+router.get('/post/:id', postController.getPost)
 router.post('/post/create', privateRoute, uploadFiles, postController.createPost)
-router.post('/post/edit/:id', privateRoute, uploadFiles, postController.editPost) //EDIT ROUTE
-router.delete('/post/delmedia/:id', privateRoute, postController.deleteMedia) //Delete Media
-router.put('/post/reorder/:id', privateRoute, postController.reOrderMedia)
+router.post('/post/:id/edit', privateRoute, uploadFiles, postController.editPost) //EDIT ROUTE
+router.delete('/post/:id/delmedia', privateRoute, postController.deleteMedia) //Delete Media
+router.put('/post/:id/reorder', privateRoute, postController.reOrderMedia)
 router.post('/post/:id/like', privateRoute, postController.likePost)
+
+//Post-Comment
 router.post('/post/:id/comment', privateRoute, commentController.commentPost)
 router.post('/post/:id/reply', privateRoute, commentController.replyPost)
 router.put('/post/:id/editComment', privateRoute, commentController.editCommentPost)
 router.delete('/post/:id/deleteComment', privateRoute, commentController.deleteComment)
 
-router.get('/post/:id', postController.getPost)
+
 
 //Search
 router.get('/explore/:hashtag', searchController.searchHashtag)
