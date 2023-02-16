@@ -50,8 +50,6 @@ router.post('/post/:id/reply', privateRoute, commentController.replyPost)
 router.put('/post/:id/editComment', privateRoute, commentController.editCommentPost)
 router.delete('/post/:id/deleteComment', privateRoute, commentController.deleteComment)
 
-
-
 //Search
 router.get('/explore/:hashtag', searchController.searchHashtag)
 

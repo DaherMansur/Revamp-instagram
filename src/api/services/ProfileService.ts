@@ -41,7 +41,7 @@ export const findProfile = async(username:string) => {
 
 export const findPhoto = async(id:string) => {
    const profile = await Profile.findOne({_id: id})
-   const photo = profile?.photo?.find(e => e.url)
+   const photo = profile?.photo?.find(e => e?.url ? e : null);
 
    return photo
 }

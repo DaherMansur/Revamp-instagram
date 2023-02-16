@@ -9,7 +9,7 @@ dotenv.config()
 //Models
 import User from '../models/User'
 
-const notAuthorizedJson = {status:401, message: 'Não autorizado'}
+const notAuthorizedJson = {status:401, message: 'É necessário estar logado para completar a ação'}
 const options = {
    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
    secretOrKey: process.env.JWT_KEY as string
