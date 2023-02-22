@@ -1,41 +1,47 @@
 import sharp from "sharp";
 import { unlink } from "fs/promises";
 import fs from 'fs'
-import mongoose, {Types} from "mongoose";
+import mongoose, {Types, Document} from "mongoose";
 
 //models
 import User from '../models/User'
-import Profile from '../models/Profile'
+import Profile, {IProfile, ProfileDocument} from '../models/Profile'
 import Comment from "../models/Comment";
-import Post, { IPost, Hashtag, Files } from '../models/Post'
+import Post, { IPost, Hashtag, Files, PostDocument } from '../models/Post'
+
+//Types
+interface GetPostPopulateResult {
+   error?: string,
+   post?: PostDocument,
+}
 
 export {IPost}
 
-export const userProfile = async(reqUser:Express.User | undefined) => {
+export const userProfile = async(reqUser:Express.User | undefined): Promise<ProfileDocument | Error> => {
    const user = reqUser as InstanceType<typeof User>
    const profile = await Profile.findOne({user: user?.id})
 
    if(!profile) return new Error('Usuário não existe')
 
-   return profile
+   return profile as ProfileDocument
 }
 
-export const validId = async(id:string) => {
+export const validId = async(id:string): Promise<Error | void> => {
    if(!mongoose.Types.ObjectId.isValid(id)) return new Error('ID Inválido')
 }
 
-export const checkEditable = async(idProfileUser:string, idProfilePost:string) => {
+export const checkEditable = async(idProfileUser:string, idProfilePost:string): Promise<Error | void> => {
    if(idProfileUser !== idProfilePost) {
       return new Error('Você não tem permissão para editar esse post')
    }
 }
 
-export const captionLength = (caption:string) => {
+export const captionLength = (caption:string): string | Error => {
    if(caption.length > 2200) return new Error('A legenda excedeu o número de caracteres(2200)')
    return caption
 }
 
-export const processHashtag = (caption:string) => {
+export const processHashtag = (caption:string): Hashtag[] => {
    const hashtag:Hashtag[] = []
    if(caption) {
       for(let i = 0; i < caption.length; i++){
@@ -58,7 +64,7 @@ export const processHashtag = (caption:string) => {
    return hashtag
 }
 
-export const addPhotoStorage = async(files:Express.Multer.File[], x:string) => {
+export const addPhotoStorage = async(files:Express.Multer.File[], x:string): Promise<string> => {
    let i = parseInt(x)
    let filename = files[i].filename
    let [type, extension] = files[i].mimetype.split('/')
@@ -83,7 +89,7 @@ export const addPhotoStorage = async(files:Express.Multer.File[], x:string) => {
    return file
 }
 
-export const processMedia = async(files:Express.Multer.File[], mediaPost:Files[] | undefined) => {
+export const processMedia = async(files:Express.Multer.File[], mediaPost:Files[] | undefined): Promise<Files[]> => {
    let media:Files[] = []
    if(mediaPost){
       media = mediaPost
@@ -98,7 +104,7 @@ export const processMedia = async(files:Express.Multer.File[], mediaPost:Files[]
    return media
 }
 
-export const findPostEditable = async(idPost:string, idProfileUser:string) => {
+export const findPostEditable = async(idPost:string, idProfileUser:string): Promise<PostDocument | Error> => {
 
    const post = await Post.findById(idPost)
    if(!post) return new Error('Post não existe')
@@ -106,21 +112,21 @@ export const findPostEditable = async(idPost:string, idProfileUser:string) => {
    const editable = await checkEditable(idProfileUser, post?.profile?.toString())
    if(editable instanceof Error) return Error(editable.message)
 
-   return post
+   return post as PostDocument
 }
 
-export const createNewPost = async(data:IPost) => {
+export const createNewPost = async(data:IPost): Promise<PostDocument> => {
    
    const newPost = new Post(data)
    await newPost.save()
-   return newPost
+   return newPost as PostDocument
 }
 
-export const updatePost = async(id:string, update:IPost) => {
+export const updatePost = async(id:string, update:IPost): Promise<void> => {
    await Post.findByIdAndUpdate(id, {$set: update})   
 }
 
-export const removeMedia = async(filename:string, idPost:string) => {
+export const removeMedia = async(filename:string, idPost:string):Promise<true> => {
    await Post.updateOne({_id: idPost}, {$pull: {
       files: {url: filename}
    }})
@@ -133,7 +139,7 @@ export const removeMedia = async(filename:string, idPost:string) => {
    return true
 }
 
-export const spliceMedia = async (filename:string, moveTo:number, files: Files[] | undefined) => {
+export const spliceMedia = async (filename:string, moveTo:number, files: Files[] | undefined): Promise<undefined | Files[]> => {
    if(files){
       let changeOrder = files.map(e => e.url)
       let file = changeOrder.indexOf(filename)
@@ -156,9 +162,9 @@ export const spliceMedia = async (filename:string, moveTo:number, files: Files[]
    }
 }
 
-export const getPostPopulate = async(id:string) => {
+export const getPostPopulate = async(id:string): Promise<GetPostPopulateResult> => {
    const isValidId = await validId(id)
-   if(isValidId instanceof Error) return isValidId.message
+   if(isValidId instanceof Error) return { error: isValidId.message }
 
    const post = await Post.findById(id)
       .populate<{comments: typeof Comment}>({
@@ -173,15 +179,14 @@ export const getPostPopulate = async(id:string) => {
       })
       .populate<{profile: typeof Profile}>({path: 'profile'})
       
-
    if(!post) {
-      return new Error('Post não existe')
+      return { error: 'Post não existe' };
    }
 
-   return post
+   return post as GetPostPopulateResult;
 }
 
-export const setLike = async(id:string, idProfile:Types.ObjectId) => {
+export const setLike = async(id:string, idProfile:Types.ObjectId): Promise<boolean | Error> => {
 
    const post = await Post.findById(id)
    if(!post) return new Error('Post não existe')
@@ -210,7 +215,7 @@ export const setLike = async(id:string, idProfile:Types.ObjectId) => {
    }
 }
 
-export const setComment = async(comment:string, id:string, idUser:Types.ObjectId) => {
+export const setComment = async(comment:string, id:string, idUser:Types.ObjectId): Promise<string | Error | PostDocument> => {
    const isValid = await validId(id)
    if(isValid instanceof Error) return isValid.message
 
@@ -223,10 +228,10 @@ export const setComment = async(comment:string, id:string, idUser:Types.ObjectId
       }
    })
    if(!post) return new Error('Post não existe')
-   return post
+   return post as PostDocument
 }
 
-export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Types.ObjectId) => {
+export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Types.ObjectId): Promise<PostDocument | Error> => {
 
    const post = await Post.findOneAndUpdate({
       comments: {
@@ -244,5 +249,5 @@ export const setReply = async(comment:string, idreply:Types.ObjectId, idUser:Typ
    })
 
    if(!post) return new Error('Post não existe')
-   return post
+   return post as PostDocument
 }

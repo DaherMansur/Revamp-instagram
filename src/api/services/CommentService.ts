@@ -2,26 +2,26 @@ import mongoose, {Types} from "mongoose";
 
 //models
 import User from '../models/User'
-import Profile from '../models/Profile'
-import Comment, {IComment} from '../models/Comment'
+import Profile, { ProfileDocument } from '../models/Profile'
+import Comment, {CommentDocument} from '../models/Comment'
 import Post, { IPost } from '../models/Post'
 
 export {IPost}
 
-export const validId = async(id:string) => {
+export const validId = async(id:string): Promise<Error | void> => {
    if(!mongoose.Types.ObjectId.isValid(id)) return new Error('ID Inválido')
 }
 
-export const userProfile = async(reqUser:Express.User | undefined) => {
+export const userProfile = async(reqUser:Express.User | undefined): Promise<ProfileDocument | Error> => {
    const user = reqUser as InstanceType<typeof User>
    const profile = await Profile.findOne({user: user?.id})
 
    if(!profile) return new Error('Usuário não existe')
 
-   return profile
+   return profile as ProfileDocument
 }
 
-export const setComment = async(comment:string, id:string, idUser:Types.ObjectId) => {
+export const setComment = async(comment:string, id:string, idUser:Types.ObjectId): Promise<string | Error | CommentDocument> => {
    const isValid = await validId(id)
    if(isValid instanceof Error) return isValid.message
 
@@ -42,7 +42,7 @@ export const setComment = async(comment:string, id:string, idUser:Types.ObjectId
    return newComment
 }
 
-export const setReply = async(comment:string, idReply:Types.ObjectId, idUser:Types.ObjectId) => {
+export const setReply = async(comment:string, idReply:Types.ObjectId, idUser:Types.ObjectId): Promise<string | Error | CommentDocument> => {
    const reply = await Comment.findOne({_id: idReply});
    if (!reply) return new Error('Comentário não existe');
    if (reply.depth >= reply.maxDepth) return new Error('Profundidade máxima atingida');
@@ -68,7 +68,7 @@ export const setReply = async(comment:string, idReply:Types.ObjectId, idUser:Typ
    return newComment;
 }
 
-export const editComment = async(comment:string, idComment:Types.ObjectId, idUser:Types.ObjectId) => {
+export const editComment = async(comment:string, idComment:Types.ObjectId, idUser:Types.ObjectId): Promise<CommentDocument | Error> => {
 
    const commentPost = await Comment.findOne({_id: idComment})
    if(commentPost?.idUser != idUser){
@@ -82,7 +82,7 @@ export const editComment = async(comment:string, idComment:Types.ObjectId, idUse
    return commentPost
 }
 
-export const removeComment = async (idComment:Types.ObjectId, idUser:Types.ObjectId) => {
+export const removeComment = async (idComment:Types.ObjectId, idUser:Types.ObjectId): Promise<void | Error> => {
    const comment = await Comment.findOne({_id: idComment})
    if (!comment) return new Error('Comentário não encontrado');
    if(comment?.idUser != idUser){

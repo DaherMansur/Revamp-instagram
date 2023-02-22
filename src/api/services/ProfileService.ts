@@ -3,22 +3,22 @@ import { unlink } from 'fs/promises'
 import fs from 'fs'
 
 //Models
-import User from '../models/User'
-import Profile, {IProfile, Photo, Follow} from '../models/Profile'
-import mongoose, {Types} from 'mongoose'
+import User, {UserDocument} from '../models/User'
+import Profile, {IProfile, Photo, ProfileDocument} from '../models/Profile'
+import {Types} from 'mongoose'
 
 export {IProfile} 
 
-export const userProfile = async(reqUser:Express.User | undefined) => {
+export const userProfile = async(reqUser:Express.User | undefined): Promise<ProfileDocument | Error> => {
    const user = reqUser as InstanceType<typeof User>
    const profile = await Profile.findOne({user: user?.id})
 
    if(!profile) return new Error('Usuário não existe')
 
-   return profile
+   return profile as ProfileDocument
 }
 
-export const checkEditable = async(username:string, reqUser:Express.User | undefined) => {
+export const checkEditable = async(username:string, reqUser:Express.User | undefined): Promise<boolean> => {
    const user = reqUser as InstanceType<typeof User>
 
    //Checks if the username in the URL is the same as the logged user
@@ -28,25 +28,24 @@ export const checkEditable = async(username:string, reqUser:Express.User | undef
    return editable
 }
 
-export const findProfile = async(username:string) => {
+export const findProfile = async(username:string): Promise<ProfileDocument> => {
    const user = await User.findOne({username})
-   // if(!user) return new Error('Perfil não encontrado')
 
    const profile = await Profile.findOne({user: user?.id})
       .populate<{user: typeof User}>
       ({path: 'user', select: 'username'})
    
-   return profile
+   return profile as unknown as ProfileDocument
 }
 
-export const findPhoto = async(id:string) => {
+export const findPhoto = async(id:string): Promise<Photo | undefined> => {
    const profile = await Profile.findOne({_id: id})
    const photo = profile?.photo?.find(e => e?.url ? e : null);
 
    return photo
 }
 
-export const deletePhoto = async(id:string) => {
+export const deletePhoto = async(id:string): Promise<void> => {
    const photo = await findPhoto(id)
    if(photo){
       const pathUrl = `./public/assets/media/${photo?.url}.png`
@@ -56,7 +55,7 @@ export const deletePhoto = async(id:string) => {
    }
 }
 
-export const addPhoto = async(file:Express.Multer.File | undefined) => {
+export const addPhoto = async(file:Express.Multer.File | undefined): Promise<false | Photo>=> {
    
    if(!file) return false
 
@@ -76,7 +75,7 @@ export const addPhoto = async(file:Express.Multer.File | undefined) => {
 
 // Function that adds new photo if uploaded,
 // if it is not, it returns the photo that is on the profile.
-export const processPhoto = async(file:Express.Multer.File | undefined, id:string) => {
+export const processPhoto = async(file:Express.Multer.File | undefined, id:string): Promise<Photo> => {
    let photo = await addPhoto(file)
    if(!photo) return await findPhoto(id) as Photo
    
@@ -84,7 +83,7 @@ export const processPhoto = async(file:Express.Multer.File | undefined, id:strin
    return photo
 }
 
-export const updateProfile = async(data:IProfile, id:string) => {
+export const updateProfile = async(data:IProfile, id:string): Promise<Error | void> => {
    const profile = await Profile.findOne({_id: id})
    if(!profile) return new Error('Perfil não encontrado')
 
@@ -100,7 +99,7 @@ export const updateProfile = async(data:IProfile, id:string) => {
    await profile?.updateOne(updates)
 }
 
-export const setFollowing = async(username:string, idUser:Types.ObjectId) => {
+export const setFollowing = async(username:string, idUser:Types.ObjectId): Promise<boolean> => {
    const profile = await findProfile(username)
    let following = profile?.followers?.find(e => e.idProfile == idUser)
    

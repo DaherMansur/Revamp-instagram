@@ -87,6 +87,9 @@ export const reOrderMedia = async (req:Request, res:Response) => {
    const profile = await PostService.userProfile(req.user)
    if(profile instanceof Error) return res.json({error: profile.message})
 
+   const isValid = await PostService.validId(id)
+   if(isValid instanceof Error) return res.json({error: isValid.message })
+
    const post = await PostService.findPostEditable(id, profile?.id)
    if(post instanceof Error) return res.json({error: post.message})
 

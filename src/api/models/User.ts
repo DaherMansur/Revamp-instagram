@@ -1,10 +1,12 @@
-import {Model, Schema, model, connection} from "mongoose"
+import {Model, Document, Schema, model, connection} from "mongoose"
 
 export interface IUser {
    email: string,
    password: string,
    username: string
 }
+
+export interface UserDocument extends Document, IUser {}
 
 const schema = new Schema<IUser>({
    email: {type:String, required:true, unique:true},
@@ -14,7 +16,8 @@ const schema = new Schema<IUser>({
 
 const modelName:string = 'User'
 
-export default (connection && connection.models[modelName]) ?
-   connection.models[modelName] as Model<IUser>
-   :
-   model<IUser>(modelName, schema)
+const User: Model<UserDocument> =
+   (connection && connection.models[modelName]) ||
+   model<UserDocument>(modelName, schema)
+
+export default User

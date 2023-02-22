@@ -1,4 +1,4 @@
-import {connection, Model, model, Schema, Types} from "mongoose";
+import {connection, Document, Model, model, Schema, Types} from "mongoose";
 
 export interface IComment {
   idUser: Types.ObjectId;
@@ -12,6 +12,8 @@ export interface IComment {
 interface Reply extends IComment{
   id:Types.ObjectId
 }
+
+export interface CommentDocument extends Document, IComment {}
 
 const schema = new Schema<IComment>({
   idUser: { type: Schema.Types.ObjectId, ref: "Profile" },
@@ -29,7 +31,8 @@ const schema = new Schema<IComment>({
 
 export const modelName:string = 'Comment'
 
-export default (connection && connection.models[modelName]) ?
-   connection.models[modelName] as Model<IComment>
-   :
-   model<IComment>(modelName, schema)
+const Comment: Model<CommentDocument> =
+   (connection && connection.models[modelName]) ||
+   model<CommentDocument>(modelName, schema)
+
+export default Comment

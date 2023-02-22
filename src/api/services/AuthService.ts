@@ -6,7 +6,7 @@ import User, {IUser} from '../models/User'
 import Profile from '../models/Profile'
 
 
-export const createUser = async(data:IUser)  => {   
+export const createUser = async(data:IUser): Promise<Error | string> => {   
 
    const username = await User.findOne({username: data?.username})
    const email = await User.findOne({email: data?.email})
@@ -34,7 +34,7 @@ export const createUser = async(data:IUser)  => {
    return token
 }
 
-export const login = async(email:string, password:string) => {
+export const login = async(email:string, password:string): Promise<Error | string> => {
 
    const user = await User.findOne({email})
    if(!user) return new Error('Email ou senha errados')

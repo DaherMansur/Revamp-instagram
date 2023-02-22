@@ -1,4 +1,4 @@
-import {Schema, model, Model, Types, connection} from "mongoose";
+import {Schema, Document, model, Model, Types, connection} from "mongoose";
 
 export enum EFollow {
    Follow = 'follow',
@@ -26,6 +26,8 @@ export interface IProfile {
    following?: Array<Follow> 
    followers?: Array<Follow>
 }
+
+export interface ProfileDocument extends Document, IProfile {}
 
 const schema = new Schema({
    user: {type: Schema.Types.ObjectId, ref: 'User'},
@@ -58,7 +60,8 @@ const schema = new Schema({
 
 const modelName:string = 'Profile'
 
-export default (connection && connection.models[modelName]) ?
-   connection.models[modelName] as Model<IProfile>
-   :
-   model<IProfile>(modelName, schema)
+const Profile: Model<ProfileDocument> = 
+   (connection && connection.models[modelName]) ||
+   model<ProfileDocument>(modelName, schema)
+
+export default Profile;

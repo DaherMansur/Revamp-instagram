@@ -8,7 +8,6 @@ export const getProfile = async(req:Request, res:Response) => {
    const username = req.params.username as string 
 
    const profile = await ProfileService.findProfile(username)
-   if(profile instanceof Error) return res.json({error: profile.message})
    
    const editable = await ProfileService.checkEditable(username, req.user)
 
@@ -31,7 +30,7 @@ export const edit = async (req:Request, res:Response) => {
    if(profile instanceof Error) return res.json({error: profile.message})
 
    const photoName = await ProfileService.processPhoto(file, profile?.id)
-   console.log(photoName)
+
    const updates:ProfileService.IProfile = {
       name: data.name,
       bio: data.bio,
