@@ -65,3 +65,14 @@ export const deleteComment = async (req:Request, res:Response) => {
 
    res.json({deleted: true})
 }
+
+export const getPostComment = async(req:Request, res:Response) => {
+   const id = req.params.id as string
+
+   const isValid = await CommentService.validId(id)
+   if(isValid instanceof Error) return res.json({error: isValid.message })
+
+   const getComments = await CommentService.getComment(id)
+   
+   res.json({getComments})
+}

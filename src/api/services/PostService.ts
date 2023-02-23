@@ -6,7 +6,6 @@ import mongoose, {Types, Document} from "mongoose";
 //models
 import User from '../models/User'
 import Profile, {IProfile, ProfileDocument} from '../models/Profile'
-import Comment from "../models/Comment";
 import Post, { IPost, Hashtag, Files, PostDocument } from '../models/Post'
 
 //Types
@@ -167,16 +166,6 @@ export const getPostPopulate = async(id:string): Promise<GetPostPopulateResult> 
    if(isValidId instanceof Error) return { error: isValidId.message }
 
    const post = await Post.findById(id)
-      .populate<{comments: typeof Comment}>({
-         path: 'comments.idComment',
-         populate: [
-            {path: 'idUser', model: 'Profile'},
-            {path: 'reply.id', model: 'Comment', populate: [
-               {path: 'idUser', model: 'Profile'},
-               {path: 'reply.id', model: 'Comment'},
-            ]}
-         ]
-      })
       .populate<{profile: typeof Profile}>({path: 'profile'})
       
    if(!post) {

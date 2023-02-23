@@ -4,7 +4,13 @@ import mongoose, {Types} from "mongoose";
 import User from '../models/User'
 import Profile, { ProfileDocument } from '../models/Profile'
 import Comment, {CommentDocument} from '../models/Comment'
-import Post, { IPost } from '../models/Post'
+import Post, { IPost, PostDocument } from '../models/Post'
+
+//Types
+interface GetCommentPopulateResult {
+   error?: string,
+   CommentDocument?: CommentDocument,
+}
 
 export {IPost}
 
@@ -97,4 +103,20 @@ export const removeComment = async (idComment:Types.ObjectId, idUser:Types.Objec
    }
    await Comment.findByIdAndDelete(idComment);
    return
+}
+
+export const getComment = async(id:string): Promise<GetCommentPopulateResult> => {
+   const post = await Post.findOne({_id: id}, 'comments')
+      .populate<{comments: typeof Comment}>({
+         path: 'comments.idComment',
+         populate: [
+            {path: 'idUser', model: 'Profile'},
+            {path: 'reply.id', model: 'Comment', populate: [
+               {path: 'idUser', model: 'Profile'},
+               {path: 'reply.id', model: 'Comment'},
+            ]}
+         ]
+      })
+
+   return post as GetCommentPopulateResult
 }
