@@ -1,11 +1,11 @@
 import sharp from "sharp";
 import { unlink } from "fs/promises";
 import fs from 'fs'
-import mongoose, {Types, Document} from "mongoose";
+import mongoose, {Types} from "mongoose";
 
 //models
 import User from '../models/User'
-import Profile, {IProfile, ProfileDocument} from '../models/Profile'
+import Profile, {ProfileDocument} from '../models/Profile'
 import Post, { IPost, Hashtag, Files, PostDocument } from '../models/Post'
 
 //Types

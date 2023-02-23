@@ -3,7 +3,7 @@ import { unlink } from 'fs/promises'
 import fs from 'fs'
 
 //Models
-import User, {UserDocument} from '../models/User'
+import User from '../models/User'
 import Profile, {IProfile, Photo, ProfileDocument} from '../models/Profile'
 import {Types} from 'mongoose'
 

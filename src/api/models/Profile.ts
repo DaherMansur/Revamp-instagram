@@ -1,17 +1,11 @@
 import {Schema, Document, model, Model, Types, connection} from "mongoose";
 
-export enum EFollow {
-   Follow = 'follow',
-   Unfollow = 'unfollow'
-}
-
 export interface Photo{
    url: string
 }
 
 export interface Follow {
    idProfile?: Types.ObjectId, //idProfile?
-   // follow?: EFollow
 }
 
 export interface IProfile {
@@ -41,20 +35,10 @@ const schema = new Schema({
    following: [{
       idProfile: {type: Schema.Types.ObjectId, ref: 'Profile'},
       _id:false
-      // follow: {
-      //    type:String,
-      //    enum: EFollow,
-      //    default: 'unfollow'
-      // }
    }],
    followers: [{
       idProfile: {type: Schema.Types.ObjectId, ref: 'Profile'},
       _id:false
-      // follow: {
-      //    type:String,
-      //    enum: EFollow,
-      //    default: 'unfollow'
-      // }
    }]
 })
 

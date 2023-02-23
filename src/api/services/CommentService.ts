@@ -4,7 +4,7 @@ import mongoose, {Types} from "mongoose";
 import User from '../models/User'
 import Profile, { ProfileDocument } from '../models/Profile'
 import Comment, {CommentDocument} from '../models/Comment'
-import Post, { IPost, PostDocument } from '../models/Post'
+import Post, { IPost } from '../models/Post'
 
 //Types
 interface GetCommentPopulateResult {
