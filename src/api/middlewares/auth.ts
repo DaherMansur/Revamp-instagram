@@ -3,6 +3,7 @@ import {Strategy as JwtStategy, ExtractJwt} from 'passport-jwt'
 import jwt from 'jsonwebtoken'
 import {NextFunction, Request, Response} from 'express'
 import dotenv from 'dotenv'
+import {IUser} from '../models/User'
 
 dotenv.config()
 
@@ -27,7 +28,7 @@ passport.use(new JwtStategy(options, async(payload, done) => {
 
 //Only logged user can see it
 export const privateRoute = (req:Request, res:Response, next:NextFunction) => {
-   const authFunction = passport.authenticate('jwt', (err, user) => {
+   const authFunction = passport.authenticate('jwt', (err:any, user:IUser) => {
       if(user){
          req.user = user
          next()
@@ -40,7 +41,7 @@ export const privateRoute = (req:Request, res:Response, next:NextFunction) => {
 
 //Publics Routes means everyone can see it.
 export const publicRoute = (req:Request, res:Response, next:NextFunction) => {
-   const authFunction = passport.authenticate('jwt', (err, user) => {
+   const authFunction = passport.authenticate('jwt', (err:any, user:IUser) => {
       if(user){
          req.user = user
          next()

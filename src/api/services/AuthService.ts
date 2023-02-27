@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt'
 import User, {IUser} from '../models/User'
 import Profile from '../models/Profile'
 
-
 export const createUser = async(data:IUser): Promise<Error | string> => {   
 
    const username = await User.findOne({username: data?.username})
