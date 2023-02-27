@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rodrigodalfre/revamp-instagram.git"
+    "url": "git+https://github.com/DaherMansur/revamp-instagram.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rodrigodalfre/revamp-instagram/issues"
+    "url": "https://github.com/DaherMansur/revamp-instagram/issues"
   },
-  "homepage": "https://github.com/rodrigodalfre/revamp-instagram#readme",
+  "homepage": "https://github.com/DaherMansur/revamp-instagram#readme",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
