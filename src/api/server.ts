@@ -41,4 +41,4 @@ app.use((req:Request, res:Response) => {
 })
 
 app.use(errorHandler)
-app.listen(process.env.PORT)
+app.listen(process.env.PORT_API)

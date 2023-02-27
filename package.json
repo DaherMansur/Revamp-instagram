@@ -5,18 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "nodemon -e ts,json src/api/server.ts"
+    "start-api": "nodemon -e ts,json src/api/server.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DaherMansur/revamp-instagram.git"
+    "url": "git+https://github.com/rodrigodalfre/revamp-instagram.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/DaherMansur/revamp-instagram/issues"
+    "url": "https://github.com/rodrigodalfre/revamp-instagram/issues"
   },
-  "homepage": "https://github.com/DaherMansur/revamp-instagram#readme",
+  "homepage": "https://github.com/rodrigodalfre/revamp-instagram#readme",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^8.5.9",
