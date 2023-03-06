@@ -28,7 +28,7 @@ export const createUser = async(data:IUser): Promise<Error | string> => {
    newProfile.user = newUser?.id
    await newProfile.save()
 
-   const token = generateToken({_id: newUser?.id})
+   const token = await generateToken({_id: newUser?.id})
 
    return token
 }
@@ -42,7 +42,7 @@ export const login = async(email:string, password:string): Promise<Error | strin
    const passMatch = bcrypt.compareSync(password, user?.password)
    if(!passMatch) return new Error('Email ou senha errados')
 
-   const token = generateToken(user?.id)
+   const token = await generateToken(user?.id)
 
    return token
 }

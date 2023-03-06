@@ -1,8 +1,9 @@
-import express, {Request, Response, ErrorRequestHandler} from 'express'
+import express, {Request, Response} from 'express'
 import path from 'path'
 import dotenv from 'dotenv'
 import mustacheExpress from 'mustache-express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 
@@ -11,6 +12,8 @@ import WebRoutes from './routes/web'
 
 //Config
 const app = express()
+
+app.use(cookieParser())
 
 app.engine('mustache', mustacheExpress())
 app.set('view engine', 'mustache')
@@ -29,5 +32,4 @@ app.use((req:Request, res:Response) => {
    res.render('404')
 })
 
-// app.use(errorHandler)
 app.listen(process.env.PORT_WEB)

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import {NextFunction, Request, Response} from 'express'
 import dotenv from 'dotenv'
 import {IUser} from '../models/User'
+import {Types} from 'mongoose'
 
 dotenv.config()
 
@@ -17,6 +18,7 @@ const options = {
 }
 
 passport.use(new JwtStategy(options, async(payload, done) => {
+   console.log(payload)
    const user = await User.findOne({_id: payload})
 
    if (user) {
@@ -52,8 +54,18 @@ export const publicRoute = (req:Request, res:Response, next:NextFunction) => {
    authFunction(req, res, next)
 }
 
-export const generateToken = (data:Object) => {
-   return jwt.sign(data, process.env.JWT_KEY as string)
+export const generateToken = async(data:Object) => {
+   const user = await findUser(data)
+   const dataForm = {
+      email: user?.email,
+      username: user?.username,
+      _id: user?._id
+   }
+   return jwt.sign(dataForm, process.env.JWT_KEY as string)
+}
+
+const findUser = async(id:Object) => {
+   return await User.findOne({_id: id})
 }
 
 export default passport
