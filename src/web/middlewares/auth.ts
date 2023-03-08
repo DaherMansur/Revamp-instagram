@@ -1,17 +1,16 @@
 import {Request, Response, NextFunction} from 'express'
-import jwt from 'jsonwebtoken'
 import {Strategy as JwtStategy, ExtractJwt} from 'passport-jwt'
 import passport from 'passport'
 import dotenv from 'dotenv'
-import User from '../../api/models/User'
 
 dotenv.config()
 
 const cookieExtractor = (req:Request) => {
    let jwt = null
-   if (req && req.signedCookies && req.signedCookies.jwt) {
+   if (req && req.cookies.jwt) {
        jwt = req.cookies.jwt.token
    }
+   //req.signedCookies && req.signedCookies.jwt
    return jwt
 }
 
@@ -48,3 +47,8 @@ export const privateRoute = (req:Request, res:Response, next:NextFunction) => {
    authFunction(req, res, next)
 }
 
+export const logoutRoute = (req:Request, res:Response, next:NextFunction) => {
+   res.clearCookie('jwt', { httpOnly: true, path: '/' }); // remove o cookie de autenticação
+   delete req.headers.authorization; // remove o cabeçalho de autorização
+   next();
+}

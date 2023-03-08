@@ -25,3 +25,7 @@ export const teste = async(req:Request, res:Response) => {
    const user = req.user
    res.render('teste', user)
 }
+
+export const logout = (req:Request, res:Response) => {
+   res.redirect('/');
+}

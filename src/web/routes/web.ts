@@ -4,13 +4,14 @@ import {Router} from 'express'
 import * as AuthController from '../controllers/authController'
 
 //middlewares
-import { privateRoute } from '../middlewares/auth'
+import { privateRoute, logoutRoute } from '../middlewares/auth'
 
 const router = Router()
 
-router.get('/', AuthController.index)
-router.post('/login', AuthController.login)
+router.get('/', privateRoute, AuthController.index)
+router.post('/login', privateRoute, AuthController.login)
 router.get('/teste', privateRoute, AuthController.teste)
+router.post('/logout', logoutRoute, AuthController.logout)
 //router.post('/logout', AuthController.logout)
 
 
