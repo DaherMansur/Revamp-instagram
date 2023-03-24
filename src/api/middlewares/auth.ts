@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken'
 import {NextFunction, Request, Response} from 'express'
 import dotenv from 'dotenv'
 import {IUser} from '../models/User'
-import {Types} from 'mongoose'
 
 dotenv.config()
 
