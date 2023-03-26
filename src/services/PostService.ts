@@ -70,7 +70,7 @@ export const addPhotoStorage = async(files:Express.Multer.File[], x:string): Pro
 
    if(type === 'image'){
       await sharp(files[i].path)
-         .toFile(`./public/assets/media/${filename}.${extension}`)
+         .toFile(`./public/media/${filename}.${extension}`)
 
       sharp.cache(false)
       unlink(files[i].path)
@@ -79,7 +79,7 @@ export const addPhotoStorage = async(files:Express.Multer.File[], x:string): Pro
    if(type === 'video'){
       let filename = files[i].filename
       let oldPath = files[i].path
-      let newPath = `./public/assets/media/${filename}.${extension}`
+      let newPath = `./public/media/${filename}.${extension}`
       fs.rename(oldPath, newPath, (err) => {
          if(err) console.log(err)
       })
@@ -130,7 +130,7 @@ export const removeMedia = async(filename:string, idPost:string):Promise<true> =
       files: {url: filename}
    }})
 
-   let pathUrl = `./public/assets/media/${filename}`
+   let pathUrl = `./public/media/${filename}`
    if(fs.existsSync(pathUrl)){
       await unlink(pathUrl)
    }

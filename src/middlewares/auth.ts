@@ -17,7 +17,6 @@ const options = {
 }
 
 passport.use(new JwtStategy(options, async(payload, done) => {
-   console.log(payload)
    const user = await User.findOne({_id: payload})
 
    if (user) {

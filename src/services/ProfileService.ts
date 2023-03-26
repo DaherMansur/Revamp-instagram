@@ -48,7 +48,7 @@ export const findPhoto = async(id:string): Promise<Photo | undefined> => {
 export const deletePhoto = async(id:string): Promise<void> => {
    const photo = await findPhoto(id)
    if(photo){
-      const pathUrl = `./public/assets/media/${photo?.url}.png`
+      const pathUrl = `./public/media/${photo?.url}`
       if(fs.existsSync(pathUrl)){
          await unlink(pathUrl)
       }
@@ -63,9 +63,10 @@ export const addPhoto = async(file:Express.Multer.File | undefined): Promise<fal
    await sharp(file.path)
       .toFormat('png')
       .resize(200)
-      .toFile(`./public/assets/media/${file?.filename}.png`)
+      .toFile(`./public/media/${file?.filename}.png`)
          
-   photo.url = file?.filename
+   photo.url = `${file?.filename}.png`
+   //photo.url = file?.filename
 
    // Use this whenever you use -+unlink
    sharp.cache(false);
