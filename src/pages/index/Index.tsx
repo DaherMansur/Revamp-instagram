@@ -1,6 +1,7 @@
+import { Button } from "@mui/material"
 
 export const Index = () => {
    return (
-      <h1>Aqui é o index</h1>
+      <Button>Botao</Button>
    )
 }
