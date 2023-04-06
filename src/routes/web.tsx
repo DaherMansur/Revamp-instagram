@@ -9,6 +9,7 @@ import {
 import { Index } from '../pages/index/Index'
 
 export const AppRoutes = () => {
+
    return (
       <Router>
          <Switch>
