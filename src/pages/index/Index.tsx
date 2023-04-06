@@ -2,6 +2,6 @@ import { Button } from "@mui/material"
 
 export const Index = () => {
    return (
-      <Button>Botao</Button>
+      <Button variant="contained" color="primary">Botao</Button>
    )
 }

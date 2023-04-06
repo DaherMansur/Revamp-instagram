@@ -1,9 +1,14 @@
 
+import { ThemeProvider } from '@mui/material'
 import { AppRoutes } from './routes/web'
+import { LightTheme } from './shared/themes/Light'
 
 function App() {
   return (
-      <AppRoutes/>
+    <ThemeProvider theme={LightTheme}>
+      <AppRoutes />
+    </ThemeProvider>
+
   )
 }
 
