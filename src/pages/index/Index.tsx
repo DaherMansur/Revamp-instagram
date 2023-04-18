@@ -1,18 +1,8 @@
-import { Button } from "@mui/material"
-
-//Context
-import { AppThemeContext } from "../../shared/contexts/ThemeContext"
+import { Header } from "../../shared/components/header/Header"
 
 export const Index = () => {
-   const { toggleTheme } = AppThemeContext()
 
    return (
-      <Button
-         variant="contained"
-         color="primary"
-         onClick={toggleTheme}
-      >
-         toggleTheme
-      </Button>
+      <Header/>
    )
 }
