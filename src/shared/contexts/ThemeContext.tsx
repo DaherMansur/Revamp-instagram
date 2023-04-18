@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { ThemeProvider } from "styled-components";
+import { usePersistedState } from "../hook/usePersistedState";
 
 import { lightTheme, darkTheme } from '../themes/Theme';
 import { GlobalStyle } from '../themes/GlobalStyle';
@@ -23,10 +24,11 @@ export const AppThemeContext = () => {
 export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
   children
 }) => {
-  const [themeName, setThemeName] = useState<'light' | 'dark'>('light');
+  const [themeName, setThemeName] = usePersistedState('theme', 'light')
+  //const [themeName, setThemeName] = useState<'light' | 'dark'>('light')
 
   const toggleTheme = useCallback(() => {
-    setThemeName((oldThemeName) => oldThemeName === 'light' ? 'dark' : 'light');
+    setThemeName((oldThemeName:string) => oldThemeName === 'light' ? 'dark' : 'light')
   }, []);
 
   const theme = useMemo(() => {
