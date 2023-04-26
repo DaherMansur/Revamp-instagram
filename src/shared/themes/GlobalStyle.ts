@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import '../fonts/fonts.css';
 
 interface IPropsTheme {
   theme: {
@@ -11,6 +12,8 @@ interface IPropsTheme {
 }
 
 export const GlobalStyle = createGlobalStyle<IPropsTheme>`
+  @import './fonts/fonts.css';
+
   *{
     margin: 0;
     padding: 0;

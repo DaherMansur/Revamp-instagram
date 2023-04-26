@@ -1,7 +1,5 @@
 import styled from "styled-components";
 
-import { SwitchTheme } from "./ToggleTheme";
-
 type MenuAppProps = {
    children: React.ReactNode;
 }
