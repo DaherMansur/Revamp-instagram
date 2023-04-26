@@ -4,7 +4,7 @@ export const lightTheme = {
   backgroundColor: '#dcdcdc',
   textColor: '#333',
   borderRadius: '5px',
-  backgroundMenu: '#7159c1',
+  backgroundMenu: '#7E57C2',
 };
 
 export const darkTheme = {

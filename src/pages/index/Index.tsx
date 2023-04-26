@@ -1,8 +1,8 @@
-import { Header } from "../../shared/components/header/Header"
+import { Navbar } from "../../shared/layout/NavBar"
 
 export const Index = () => {
 
    return (
-      <Header/>
+      <Navbar/>
    )
 }

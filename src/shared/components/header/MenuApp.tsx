@@ -2,6 +2,10 @@ import styled from "styled-components";
 
 import { SwitchTheme } from "./ToggleTheme";
 
+type MenuAppProps = {
+   children: React.ReactNode;
+}
+
 export const Container = styled.div`
    height: 60px;
    background: ${props => props.theme.backgroundMenu};
@@ -11,13 +15,11 @@ export const Container = styled.div`
    padding: 0 30px;
    justify-content: space-between;
 `
-export const Header = () => {
 
+export const MenuApp:React.FC<MenuAppProps> = ({children}) => {
    return (
       <Container>
-         Hello World
-
-         <SwitchTheme />
+         {children}
       </Container>
    )
 }

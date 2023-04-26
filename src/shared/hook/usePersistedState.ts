@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+//Hook para salvar no localStorage
 export const usePersistedState = (key:string, initialState: any) => {
    const [state, setState] = useState(() => {
       const storageValue = localStorage.getItem(key)

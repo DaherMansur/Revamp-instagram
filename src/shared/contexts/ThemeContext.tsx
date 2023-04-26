@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import { ThemeProvider } from "styled-components";
 import { usePersistedState } from "../hook/usePersistedState";
 
@@ -25,7 +25,6 @@ export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
   children
 }) => {
   const [themeName, setThemeName] = usePersistedState('theme', 'light')
-  //const [themeName, setThemeName] = useState<'light' | 'dark'>('light')
 
   const toggleTheme = useCallback(() => {
     setThemeName((oldThemeName:string) => oldThemeName === 'light' ? 'dark' : 'light')
